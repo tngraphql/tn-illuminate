@@ -1,0 +1,17 @@
+import { Schema as BaseSchema } from 'tn-lucid/build/src/Schema';
+import { CreateTableBuilder } from 'knex';
+
+export default class ${toClassName(filename)} extends BaseSchema {
+    protected $tableName = '${toTableName(filename)}'
+
+    public async up () {
+        this.schema.createTable(this.$tableName, (table: CreateTableBuilder) => {
+            table.increments('id')
+            table.timestamps(true)
+        })
+    }
+
+    public async down () {
+        this.schema.dropTable(this.$tableName)
+    }
+}

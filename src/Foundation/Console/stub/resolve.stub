@@ -1,0 +1,12 @@
+import { Query, Resolver } from 'tn-graphql';
+import { GraphQLString } from 'graphql';
+
+@Resolver()
+export class ${filename} {
+
+    @Query(returns => GraphQLString)
+    async index() {
+        //
+        return '';
+    }
+}

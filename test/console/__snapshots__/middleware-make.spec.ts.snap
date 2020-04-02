@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Middleware Make make a new middleware 1`] = `
+"import { ResolverData } from 'tn-graphql';
+
+export class User {
+    /**
+     * Handle an incoming request.
+     *
+     * @param data
+     * @param next
+     * @param args
+     */
+    public async handle (data: ResolverData, next: () => Promise<void>, args: string[]) {
+        //
+        await next()
+    }
+}"
+`;

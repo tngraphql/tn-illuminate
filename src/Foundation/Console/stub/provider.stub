@@ -1,0 +1,12 @@
+import { Service, ServiceProvider } from 'tn-illuminate';
+
+@Service()
+export default class ${filename} extends ServiceProvider {
+    public register() {
+        // Register your own bindings
+    }
+
+    public boot() {
+        // All bindings are ready, feel free to use them
+    }
+}

@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Migrate Make make a new migrate 1`] = `
+"import { Schema as BaseSchema } from 'tn-lucid/build/src/Schema';
+import { CreateTableBuilder } from 'knex';
+
+export default class Users extends BaseSchema {
+    protected $tableName = 'users'
+
+    public async up () {
+        this.schema.createTable(this.$tableName, (table: CreateTableBuilder) => {
+            table.increments('id')
+            table.timestamps(true)
+        })
+    }
+
+    public async down () {
+        this.schema.dropTable(this.$tableName)
+    }
+}
+"
+`;

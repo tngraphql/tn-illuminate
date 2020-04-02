@@ -1,0 +1,15 @@
+import { ResolverData } from 'tn-graphql';
+
+export class ${filename} {
+    /**
+     * Handle an incoming request.
+     *
+     * @param data
+     * @param next
+     * @param args
+     */
+    public async handle (data: ResolverData, next: () => Promise<void>, args: string[]) {
+        //
+        await next()
+    }
+}
