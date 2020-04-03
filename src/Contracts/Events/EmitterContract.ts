@@ -104,3 +104,8 @@ export interface EmitterContract<T extends any = any> {
  */
 export type EventName = string | symbol | Function;
 
+export interface FakeEmitterContract extends EmitterContract {
+    events: any[]
+
+    clear(): any;
+}
