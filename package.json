@@ -25,8 +25,8 @@
     "copy:files": "copyfiles -u 1 \"src/**/*.stub\" dist",
     "pub": "yarn publish"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Nguyenpl117,TNGraphQL",
+  "license": "MIT",
   "dependencies": {
     "@adonisjs/env": "^1.0.12",
     "@adonisjs/events": "^1.0.7",
@@ -88,7 +88,7 @@
     "url": "https://github.com/tngraphql/tn-illuminate/issues"
   },
   "homepage": "https://github.com/tngraphql/tn-illuminate#readme",
-  "description": "read me",
+  "description": "The TNGraphQL Framework.",
   "directories": {
     "example": "examples",
     "test": "test"

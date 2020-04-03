@@ -23,9 +23,7 @@ import { event } from '../Support/helpers';
 export class Application extends Container implements ApplicationContract{
     [key: string]: any;
 
-    public get inProduction() {
-        return process.env.NODE_ENV === 'production';
-    };
+    public inProduction = process.env.NODE_ENV === 'production';
 
     protected _basePath: string = process.cwd();
 
