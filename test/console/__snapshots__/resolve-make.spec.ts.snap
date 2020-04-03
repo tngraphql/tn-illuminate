@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Resolve Make make a new resolve 1`] = `
+"import { Query, Resolver } from '@tngraphql/graphql';
+import { GraphQLString } from 'graphql';
+
+@Resolver()
+export class User {
+
+    @Query(returns => GraphQLString)
+    async index() {
+        //
+        return '';
+    }
+}
+"
+`;

@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Provider Make make a new provider 1`] = `
+"import { Service, ServiceProvider } from '@tngraphql/illuminate';
+
+@Service()
+export default class User extends ServiceProvider {
+    public register() {
+        // Register your own bindings
+    }
+
+    public boot() {
+        // All bindings are ready, feel free to use them
+    }
+}
+"
+`;

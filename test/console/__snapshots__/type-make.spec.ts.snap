@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Type Make make a new type 1`] = `
+"import { Field, ObjectType } from '@tngraphql/graphql';
+
+@ObjectType()
+export class User {
+    @Field()
+    id: number
+
+    @Field()
+    name: string
+}
+"
+`;

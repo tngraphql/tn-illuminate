@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Model Make make a new model 1`] = `
+"import { DateTime } from 'luxon'
+import { column } from '@tngraphql/lucid/build/src/Orm/Decorators';
+import { BaseModel } from '@tngraphql/lucid/build/src/Orm/BaseModel';
+
+export default class User extends BaseModel {
+    @column({ isPrimary: true })
+    public id: number
+
+    @column.dateTime({ autoCreate: true })
+    public createdAt: DateTime
+
+    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    public updatedAt: DateTime
+
+    public static $columns: Pick<User, 'id' | 'createdAt' | 'updatedAt'>
+}
+"
+`;
