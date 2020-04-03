@@ -10,11 +10,11 @@
 import { Application } from '../../src/Foundation/Application';
 // import { Container } from '../../src/Container/Container';
 import { ConsoleKernel } from '../../src/Foundation/Console/ConsoleKernel';
-import { BaseCommand, Generator } from 'tn-console';
+import { BaseCommand, Generator } from '@tngraphql/console';
 import { AceApplication } from '../../src/Foundation/Console';
 // import { AppNameCommand } from '../../src/Foundation/Console/AppNameCommand';
 import { AceServiceProvider } from '../../src/Foundation/Providers/AceServiceProvider';
-import { GeneratorFile } from 'tn-console/dist/Generator/File';
+import { GeneratorFile } from '@tngraphql/console/dist/Generator/File';
 import { join } from "path";
 import { Filesystem } from '@poppinss/dev-utils/build';
 const fs = new Filesystem(join(__dirname, './app'))

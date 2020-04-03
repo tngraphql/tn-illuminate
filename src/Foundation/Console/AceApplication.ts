@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { Kernel as ConsoleKernel } from 'tn-console';
+import { Kernel as ConsoleKernel } from '@tngraphql/console';
 import { Application } from '../Application';
 
 export class AceApplication extends ConsoleKernel {

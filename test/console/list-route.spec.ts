@@ -10,7 +10,7 @@
 
 import { Application, ConsoleKernel } from '../../src/Foundation';
 import { RouteListCommand } from '../../src/Foundation/Console/RouteListCommand';
-import { Query, Resolver } from 'tn-graphql';
+import { Query, Resolver } from '@tngraphql/graphql';
 
 describe('Command | List routes', () => {
     it('list routes in the order they are register', async () => {

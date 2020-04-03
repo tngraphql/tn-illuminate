@@ -15,7 +15,7 @@ import { Filesystem } from '@poppinss/dev-utils'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { FakeLogger as Logger } from '@adonisjs/logger/build/standalone'
 import { DatabaseContract } from '@ioc:Adonis/Lucid/Database';
-import { Database } from 'tn-lucid/build/src/Database';
+import { Database } from '@tngraphql/lucid/build/src/Database';
 
 const TableBuilder = require('knex/lib/schema/tablebuilder')
 const { toArray } = require('lodash')

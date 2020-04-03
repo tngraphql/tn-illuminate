@@ -7,10 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { args, flags } from 'tn-console';
+import { args, flags } from '@tngraphql/console';
 import { GeneratorCommand } from './GeneratorCommand';
 import * as path from 'path';
-import { GeneratorFile } from 'tn-console/dist/Generator/File';
+import { GeneratorFile } from '@tngraphql/console/dist/Generator/File';
 import { snakeCase } from 'snake-case';
 import camelCase from 'camelcase'
 

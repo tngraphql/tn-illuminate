@@ -9,7 +9,7 @@
  */
 
 import * as path from 'path';
-import { BaseCommand, flags } from 'tn-console';
+import { BaseCommand, flags } from '@tngraphql/console';
 
 export class KeyGenerateCommand extends BaseCommand  {
     /**

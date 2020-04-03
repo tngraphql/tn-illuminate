@@ -11,32 +11,55 @@ import { ApplicationContract } from '../Contracts/ApplicationContract';
  */
 
 export class Facade {
-    static _instance: {[key: string]: any} = {};
+    static _instance: { [key: string]: any } = {};
 
     static _namespace: string;
 
     static app: ApplicationContract;
 
-    static create<T>(namespace: string) {
+    /**
+     * Hotswap the underlying instance behind the facade.
+     *
+     * @param namespace
+     * @param instance
+     */
+    static swap(namespace, instance) {
+        this._instance[namespace] = instance;
+        if ( this.app ) {
+            const node = this.app.lookup(namespace);
+            if ( node ) {
+                const binding = this.app.bindings.get(node.namespace);
+                this.app.bind(node.namespace, () => instance, binding.singleton);
+            }
+        }
+    }
+
+    static create<T>(namespace: string, handler?: any) {
         const base: any = {
             __ref: null
         };
-        this._instance[namespace] = base;
+        this._instance[namespace] = undefined;
         return new Proxy(base, {
             get: (target, prop) => {
-                if ( ! target.__ref ) {
+                if ( handler && handler[prop] ) {
+                    if ( typeof handler[prop] === 'function' ) {
+                        return handler[prop].bind(this);
+                    }
+                    return handler[prop];
+                }
+                if ( ! this._instance[namespace] ) {
                     if ( this.app ) {
-                        target.__ref = this.app.use(namespace);
+                        this._instance[namespace] = this.app.use(namespace);
                     }
                 }
-                return target.__ref[prop];
+                return this._instance[namespace][prop];
             },
         }) as T;
     }
 
     static clearResolvedInstances() {
         for( let namespace of Object.keys(this._instance) ) {
-            this._instance[namespace].__ref = undefined;
+            this._instance[namespace] = undefined;
         }
     }
 

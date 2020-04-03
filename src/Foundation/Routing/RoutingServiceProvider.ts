@@ -9,7 +9,7 @@
  */
 import { Service } from '../../Decorators/Service';
 import { Application } from '../../Foundation/Application';
-import { Router } from 'tn-route';
+import { Router } from '@tngraphql/route';
 import { RouteStore } from './RouteStore';
 
 @Service()

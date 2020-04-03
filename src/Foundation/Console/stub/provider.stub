@@ -1,4 +1,4 @@
-import { Service, ServiceProvider } from 'tn-illuminate';
+import { Service, ServiceProvider } from '@tngraphql/illuminate';
 
 @Service()
 export default class ${filename} extends ServiceProvider {

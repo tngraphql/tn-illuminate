@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
-import { column } from 'tn-lucid/build/src/Orm/Decorators';
-import { BaseModel } from 'tn-lucid/build/src/Orm/BaseModel';
+import { column } from '@tngraphql/lucid/build/src/Orm/Decorators';
+import { BaseModel } from '@tngraphql/lucid/build/src/Orm/BaseModel';
 
 export default class ${filename} extends BaseModel {
     @column({ isPrimary: true })

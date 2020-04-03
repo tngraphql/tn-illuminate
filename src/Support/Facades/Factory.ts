@@ -1,5 +1,5 @@
 import { Facade } from '../Facade';
-import { DBFactory } from 'tn-lucid/build/src/Factory/DBFactory';
+import { DBFactory } from '@tngraphql/lucid/build/src/Factory/DBFactory';
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>

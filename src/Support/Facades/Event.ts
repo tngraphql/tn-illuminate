@@ -10,4 +10,18 @@ import { EmitterContract } from '../../Contracts/Events/EmitterContract';
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-export const Event = Facade.create<EmitterContract>('events');
+export const Event = Facade.create<EmitterContract | any>('events', {
+    fake: function() {
+        const fake = {
+            on: function() {
+
+            },
+            emit: function(name, data) {
+                console.log('emit', name);
+            }
+        };
+        this.swap('events', fake);
+
+        return fake;
+    }
+});

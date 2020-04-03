@@ -10,7 +10,7 @@
 
 import { Application } from '../../src/Foundation';
 import { DatabaseServiceProvider } from '../../src/Database/DatabaseServiceProvider';
-import { DBFactory } from 'tn-lucid/build/src/Factory/DBFactory';
+import { DBFactory } from '@tngraphql/lucid/build/src/Factory/DBFactory';
 import { Facade } from '../../src/Support/Facade';
 import { Factory } from '../../src/Support/Facades';
 

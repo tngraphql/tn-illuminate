@@ -9,7 +9,7 @@
  */
 import { ServiceProvider } from '../Support/ServiceProvider';
 import * as path from "path";
-import { Context } from 'tn-graphql/dist/resolvers/context';
+import { Context } from '@tngraphql/graphql/dist/resolvers/context';
 
 export class TranslationServiceProvider extends ServiceProvider{
     register() {

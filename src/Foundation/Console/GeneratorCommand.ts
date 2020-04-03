@@ -1,7 +1,7 @@
 import { Application } from '../Application';
-import { BaseCommand } from 'tn-console';
+import { BaseCommand } from '@tngraphql/console';
 import { outputFile, pathExists } from 'fs-extra'
-import { GeneratorFile } from 'tn-console/dist/Generator/File';
+import { GeneratorFile } from '@tngraphql/console/dist/Generator/File';
 import * as path from 'path';
 import camelCase from "camelcase";
 import {snakeCase} from "snake-case";

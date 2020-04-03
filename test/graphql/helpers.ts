@@ -22,7 +22,7 @@ export async function initProject(fs: Filesystem) {
             `);
     await fs.add('.env', ``);
     await fs.add('app/UserResolve.ts', `
-        import { Query, Resolver } from 'tn-graphql';
+        import { Query, Resolver } from '@tngraphql/graphql';
             @Resolver()
             export class UserResolve {
                 @Query()
@@ -63,7 +63,7 @@ export async function initProject2(fs: Filesystem) {
             `);
     await fs.add('.env', ``);
     await fs.add('app/UserResolve.ts', `
-        import { Query, Resolver } from 'tn-graphql';
+        import { Query, Resolver } from '@tngraphql/graphql';
             @Resolver()
             export class UserResolve {
                 @Query()
@@ -104,7 +104,7 @@ export async function initProjectApplyMiddleware(fs: Filesystem) {
                 }
             `);
     await fs.add('app/Acl.ts', `
-    import { ResolverData } from 'tn-graphql';
+    import { ResolverData } from '@tngraphql/graphql';
 
 export class Acl {
     public async handle (
@@ -138,7 +138,7 @@ export class Kernel extends GraphQLKernel {
 }`);
     await fs.add('.env', ``);
     await fs.add('app/UserResolve.ts', `
-        import { Query, Resolver } from 'tn-graphql';
+        import { Query, Resolver } from '@tngraphql/graphql';
             @Resolver()
             export class UserResolve {
                 @Query()

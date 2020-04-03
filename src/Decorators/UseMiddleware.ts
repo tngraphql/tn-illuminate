@@ -7,8 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { UseMiddleware as BaseUseMiddleware } from 'tn-graphql';
-import { MiddlewareNode } from 'tn-route/dist/Contracts/Route';
+import { UseMiddleware as BaseUseMiddleware } from '@tngraphql/graphql';
+import { MiddlewareNode } from '@tngraphql/route/dist/Contracts/Route';
 
 export const UseMiddleware = (md: MiddlewareNode | MiddlewareNode[]) => {
     return BaseUseMiddleware(md as any)

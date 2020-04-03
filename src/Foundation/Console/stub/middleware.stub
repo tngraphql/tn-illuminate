@@ -1,4 +1,4 @@
-import { ResolverData } from 'tn-graphql';
+import { ResolverData } from '@tngraphql/graphql';
 
 export class ${filename} {
     /**

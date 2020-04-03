@@ -10,7 +10,7 @@
 import { Application } from '../Application';
 import * as path from 'path';
 import { GeneratorCommand } from './GeneratorCommand';
-import { args } from 'tn-console';
+import { args } from '@tngraphql/console';
 
 export class MiddlewareMakeCommand extends GeneratorCommand {
     protected getSuffix(): string {

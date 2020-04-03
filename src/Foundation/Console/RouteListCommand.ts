@@ -7,12 +7,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { BaseCommand, flags } from 'tn-console';
-import { Router } from 'tn-route';
+import { BaseCommand, flags } from '@tngraphql/console';
+import { Router } from '@tngraphql/route';
 import { Inject } from '../../Decorators/Inject';
 import { RouteStore } from '../Routing/RouteStore';
 import { ApplicationContract } from '../../Contracts/ApplicationContract';
-import { getMetadataStorage } from 'tn-graphql/dist/metadata/getMetadataStorage';
+import { getMetadataStorage } from '@tngraphql/graphql/dist/metadata/getMetadataStorage';
 
 const Table = require('cli-table3');
 

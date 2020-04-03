@@ -16,4 +16,4 @@ export {
 } from './Foundation';
 export { ServiceProvider } from './Support/ServiceProvider';
 export { ensureIsFunction, isClass, isFuntion, isEsm, isObject } from './utils';
-export * from 'tn-console';
+export * from '@tngraphql/console';

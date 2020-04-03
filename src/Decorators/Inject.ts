@@ -10,8 +10,7 @@
 import { Injector } from '../Container';
 import { isClass } from '../utils';
 import { CannotInjectError } from '../Container/CannotInjectError';
-import { ApplicationContract } from '../Contracts/ApplicationContract';
-import { ClassType } from 'tn-graphql';
+import { ClassType } from '@tngraphql/graphql';
 
 export const OPTIONAL_DEPS_METADATA = 'optional:paramtypes';
 

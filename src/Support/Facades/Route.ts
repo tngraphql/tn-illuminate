@@ -8,6 +8,6 @@
  * file that was distributed with this source code.
  */
 import { Facade } from '../Facade';
-import { Router } from 'tn-route';
+import { Router } from '@tngraphql/route';
 
 export const Route = Facade.create<Router>('router');

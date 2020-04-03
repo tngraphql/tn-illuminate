@@ -10,7 +10,7 @@
 
 import { Application, GraphQLKernel } from '../../src/Foundation';
 import { TranslationServiceProvider } from '../../src/Translation/TranslationServiceProvider';
-import { Context } from 'tn-graphql/dist/resolvers/context';
+import { Context } from '@tngraphql/graphql/dist/resolvers/context';
 import { LocaleUpdated } from '../../src/Foundation/Events/LocaleUpdated';
 import { EventServiceProvider } from '../../src/Foundation/Events/EventServiceProvider';
 

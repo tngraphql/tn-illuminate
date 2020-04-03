@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 import 'reflect-metadata';
-import { DefaultContainer } from 'tn-graphql/dist/utils/container';
-import { Router } from 'tn-graphql/dist/router';
+import { DefaultContainer } from '@tngraphql/graphql/dist/utils/container';
+import { Router } from '@tngraphql/graphql/dist/router';
 import { graphql, GraphQLSchema } from 'graphql';
-import { getMetadataStorage } from 'tn-graphql/dist/metadata/getMetadataStorage';
-import { Arg, Args, ArgsType, buildSchema, Field, ObjectType, Query, Resolver } from 'tn-graphql';
+import { getMetadataStorage } from '@tngraphql/graphql/dist/metadata/getMetadataStorage';
+import { Arg, Args, ArgsType, buildSchema, Field, ObjectType, Query, Resolver } from '@tngraphql/graphql';
 import _ = require('lodash');
 import { Rules } from '../../src/Decorators/Rules';
 import { Filesystem } from '@poppinss/dev-utils/build';

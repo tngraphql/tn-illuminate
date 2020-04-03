@@ -10,7 +10,7 @@
 
 import { Application, GraphQLKernel } from '../../src/Foundation';
 import { ValidatorServiceProvider } from '../../src/Foundation/Validate/ValidatorServiceProvider';
-import { Args, Query, Resolver } from 'tn-graphql';
+import { Args, Query, Resolver } from '@tngraphql/graphql';
 import { getIntrospectionQuery, graphql, IntrospectionObjectType, IntrospectionSchema, TypeKind } from 'graphql';
 
 describe('GraphQL Kernel Config', () => {

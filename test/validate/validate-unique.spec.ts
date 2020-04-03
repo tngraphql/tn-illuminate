@@ -50,7 +50,7 @@ export default {
             
             `);
         await fs.add('app/UserResolve.ts', `
-        import { Arg, Mutation, Query, Resolver } from 'tn-graphql';
+        import { Arg, Mutation, Query, Resolver } from '@tngraphql/graphql';
 import { ValidateArgs } from '../../../../src/Decorators/ValidateArgs';
 import { Rule } from '../../../../src/Foundation/Validate/Rule';
    @Resolver()

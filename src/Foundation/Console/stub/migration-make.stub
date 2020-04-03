@@ -1,4 +1,4 @@
-import { Schema as BaseSchema } from 'tn-lucid/build/src/Schema';
+import { Schema as BaseSchema } from '@tngraphql/lucid/build/src/Schema';
 import { CreateTableBuilder } from 'knex';
 
 export default class ${toClassName(filename)} extends BaseSchema {

@@ -9,7 +9,7 @@
  */
 import { GeneratorCommand } from './GeneratorCommand';
 import * as path from 'path';
-import { args } from 'tn-console';
+import { args } from '@tngraphql/console';
 
 export class ModelMakeCommand extends GeneratorCommand {
     protected getStub(): string {

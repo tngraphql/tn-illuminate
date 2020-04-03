@@ -10,11 +10,11 @@
 import { Application } from '../../src/Foundation/Application';
 // import { Container } from '../../src/Container/Container';
 import { ConsoleKernel } from '../../src/Foundation/Console/ConsoleKernel';
-import { BaseCommand, Generator } from 'tn-console';
+import { BaseCommand, Generator } from '@tngraphql/console';
 import { AceApplication } from '../../src/Foundation/Console';
 // import { AppNameCommand } from '../../src/Foundation/Console/AppNameCommand';
 import { AceServiceProvider } from '../../src/Foundation/Providers/AceServiceProvider';
-import { GeneratorFile } from 'tn-console/dist/Generator/File';
+import { GeneratorFile } from '@tngraphql/console/dist/Generator/File';
 import { join } from "path";
 import { Filesystem } from '@poppinss/dev-utils/build';
 const fs = new Filesystem(join(__dirname, './app'))
@@ -46,41 +46,25 @@ async function main() {
     })
     await kernel.handle();
 
-    const server = new ApolloServer({
-        schema: await kernel.complie(),
-        context: context => {
+    console.log(Env.get('name'));
 
+    class OrderShipped {
+        constructor(public data: any) {
         }
-        // formatError: GraphQLExceptions.handle
+    }
+
+    // Event.fake();
+
+    Event.on(OrderShipped, data => {
+        console.log(data);
     });
-    console.time();
-    await server.listen(4002);
 
-    console.timeEnd();
+    Event.on(OrderShipped, data => {
+        console.log(data);
+    })
 
-    // console.log(Env.get('name'));
-
-    // class OrderShipped {
-    //     constructor(public data: any) {
-    //     }
-    // }
-    //
-    //
-    // Event.on(OrderShipped, data => {
-    //     console.log(data);
-    // });
-    //
-    // Event.on(OrderShipped, data => {
-    //     console.log(data);
-    // })
-    //
-    // event(new OrderShipped({ id: 1, email: 'foo@bar.com' }))
-
-    // await c.call('make:command', ['user']);
-    // console.log(app.config);
-    // app.bind('name', T)
-    // console.log(await app.make('name'));
-    // console.log(await app.make('string', ['jnasjf']))
+    // app.events
+    event(new OrderShipped({ id: 1, email: 'foo@bar.com' }), app.events)
 }
 
 main();

@@ -9,7 +9,7 @@
  */
 
 import _ = require('lodash');
-import { isClass } from 'tn-graphql/dist/helpers/utils';
+import { isClass } from '@tngraphql/graphql/dist/helpers/utils';
 import { RuleValue } from '../../Decorators/Rules';
 
 export const META_DATA_VALIDATE_KEY = 'design:validatejs';

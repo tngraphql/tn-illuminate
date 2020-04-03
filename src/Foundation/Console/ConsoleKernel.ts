@@ -1,5 +1,5 @@
 import { Service } from '../../Decorators/Service';
-import { BaseCommand, } from 'tn-console';
+import { BaseCommand, } from '@tngraphql/console';
 import _ = require('lodash');
 import { AceApplication as Ace } from './AceApplication';
 import { Application } from '../Application';
@@ -9,7 +9,7 @@ import { LoadEnvironmentVariables } from '../Bootstrap/LoadEnvironmentVariables'
 import { RegisterProviders } from '../Bootstrap/RegisterProviders';
 import { BootProviders } from '../Bootstrap/BootProviders';
 import { RegisterFacades } from '../Bootstrap/RegisterFacades';
-import { ClassType } from 'tn-graphql';
+import { ClassType } from '@tngraphql/graphql';
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>

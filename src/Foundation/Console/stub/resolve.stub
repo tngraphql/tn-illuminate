@@ -1,4 +1,4 @@
-import { Query, Resolver } from 'tn-graphql';
+import { Query, Resolver } from '@tngraphql/graphql';
 import { GraphQLString } from 'graphql';
 
 @Resolver()

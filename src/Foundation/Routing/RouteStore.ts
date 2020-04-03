@@ -7,8 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { RouterResolver, RouterStoreFactory } from 'tn-graphql/dist/interfaces/RouterStoreFactory';
-import { RouterType } from 'tn-graphql/dist/router';
+import { RouterResolver, RouterStoreFactory } from '@tngraphql/graphql/dist/interfaces/RouterStoreFactory';
+import { RouterType } from '@tngraphql/graphql/dist/router';
 import { ApplicationContract } from '../../Contracts/ApplicationContract';
 
 export class RouteStore implements RouterStoreFactory {

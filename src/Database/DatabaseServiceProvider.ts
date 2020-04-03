@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { ServiceProvider } from '../Support/ServiceProvider';
-import { Database } from 'tn-lucid/build/src/Database';
-import { BaseModel } from 'tn-lucid/build/src/Orm/BaseModel';
+import { Database } from '@tngraphql/lucid/build/src/Database';
+import { BaseModel } from '@tngraphql/lucid/build/src/Orm/BaseModel';
 import {
     belongsTo,
     column,
@@ -10,8 +10,8 @@ import {
     hasManyThrough,
     hasOne,
     manyToMany
-} from 'tn-lucid/build/src/Orm/Decorators';
-import { Adapter } from 'tn-lucid/build/src/Orm/Adapter';
+} from '@tngraphql/lucid/build/src/Orm/Decorators';
+import { Adapter } from '@tngraphql/lucid/build/src/Orm/Adapter';
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>
@@ -52,7 +52,7 @@ export class DatabaseServiceProvider extends ServiceProvider {
         });
 
         this.app.singleton('factory', () => {
-            const { DBFactory } = require('tn-lucid/build/src/Factory/DBFactory');
+            const { DBFactory } = require('@tngraphql/lucid/build/src/Factory/DBFactory');
             return new DBFactory(this.app);
         });
     }

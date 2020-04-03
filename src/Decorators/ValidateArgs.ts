@@ -1,4 +1,4 @@
-import { ClassType, createMethodDecorator, ResolverData } from 'tn-graphql';
+import { ClassType, createMethodDecorator, ResolverData } from '@tngraphql/graphql';
 import { compileMessages, compileRules, handlerRulers, merge } from '../Foundation/Validate/helpers';
 import { ValidationError } from './Rules';
 import { Validator } from '../Support/Facades/Validator';
