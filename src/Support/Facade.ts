@@ -13,8 +13,6 @@ import { ApplicationContract } from '../Contracts/ApplicationContract';
 export class Facade {
     static _instance: { [key: string]: any } = {};
 
-    static _namespace: string;
-
     static app: ApplicationContract;
 
     /**
@@ -34,12 +32,9 @@ export class Facade {
         }
     }
 
-    static create<T>(namespace: string, handler?: any) {
-        const base: any = {
-            __ref: null
-        };
+    static create<T>(namespace: string, handler?: any): T {
         this._instance[namespace] = undefined;
-        return new Proxy(base, {
+        return new Proxy({}, {
             get: (target, prop) => {
                 if ( handler && handler[prop] ) {
                     if ( typeof handler[prop] === 'function' ) {

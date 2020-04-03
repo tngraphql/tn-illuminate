@@ -1,5 +1,6 @@
 import { Facade } from '../Facade';
 import { EmitterContract } from '../../Contracts/Events/EmitterContract';
+import { FakeEmitter } from '@adonisjs/events/build/src/FakeEmitter';
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>
@@ -10,16 +11,12 @@ import { EmitterContract } from '../../Contracts/Events/EmitterContract';
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-export const Event = Facade.create<EmitterContract | any>('events', {
+export const Event = Facade.create<FakeEmitter<EmitterContract>  & {
+    fake: () => void
+}>('events', {
     fake: function() {
-        const fake = {
-            on: function() {
+        const fake = new FakeEmitter(this.app);
 
-            },
-            emit: function(name, data) {
-                console.log('emit', name);
-            }
-        };
         this.swap('events', fake);
 
         return fake;
