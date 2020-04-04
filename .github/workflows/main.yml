@@ -18,14 +18,18 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
+    - name: Shutdown Ubuntu MySQL (SUDO)
+      run: sudo service mysql stop
 
     - name: Set up MySQL 5.7
+      uses: actions/checkout@v1
       with:
         mysql version: 5.7
         mysql database: test
         mysql root password: ${{ secrets.DatabasePassword }}
 
+    - uses: actions/checkout@v1
     # Runs a single command using the runners shell
     - name: Run a one-line script
       run: |
