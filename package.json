@@ -20,7 +20,7 @@
   "scripts": {
     "test": "jest --verbose --coverage --runInBand",
     "dev": "cross-env ENV_PATH=.env ts-node-dev --notify false -F ./dev",
-    "clean": "del dist",
+    "clean": "rimraf dist",
     "build": "npm run clean && tsc -b && npm run copy:files",
     "copy:files": "copyfiles -u 1 \"src/**/*.stub\" dist",
     "pub": "yarn publish"

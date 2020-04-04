@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Test
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -34,4 +34,5 @@ jobs:
     - name: Run test script
       run: |
         npm install
-        set DB=mysql && set DB_NAME=test set MYSQL_HOST=localhost set MYSQL_USER=root && set MYSQL_PASSWORD=password &&npm run-script test
+        npm run-script build
+        set DB=mysql && set DB_NAME=test set MYSQL_HOST=localhost set MYSQL_USER=root && set MYSQL_PASSWORD=password && npm run-script test
