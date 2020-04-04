@@ -10,10 +10,9 @@ module.exports = {
   },
   forceExit: true,
   testEnvironment: 'node',
-  // "testPathIgnorePatterns": [
-  //   "/node_modules/",
-  //   "/__utils"
-  // ],
+  "collectCoverageFrom": [
+    "src/**/*.ts"
+  ],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   testMatch: [
       "**/*.spec.ts",

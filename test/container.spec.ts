@@ -43,6 +43,7 @@ describe('Container', () => {
 
         afterEach(async () => {
             ioc.flush();
+            ioc.forgetInstances();
             jest.resetModules()
             await fs.cleanup();
         });
@@ -147,6 +148,7 @@ describe('Container', () => {
                 return { foo: true }
             });
 
+
             ioc.alias('App/Foo', 'Foo');
             expect(ioc.hasAlias('Foo')).toEqual(true);
             expect(ioc.hasAlias(null)).toEqual(false);
@@ -154,6 +156,7 @@ describe('Container', () => {
         });
 
         it('return alias namespace if exists', async () => {
+            ioc.flush()
             ioc.bind('App/Foo', () => {
                 return { foo: true }
             })
@@ -185,17 +188,14 @@ describe('Container', () => {
         it('raise error when lookup fails', () => {
             class Foo {
             };
-            try {
-                ioc.use('japa');
-            } catch (e) {
-                expect(e.message).toEqual('Resolve [japa] does not exists.');
-            }
-
-            try {
-                ioc.use(Foo);
-            } catch (e) {
-                expect(e.message).toEqual(`Resolve [${ Foo }] does not exists.`)
-            }
+            expect(() => ioc.use('japa')).toThrow('Resolve [japa] does not exists.');
+            expect(() => ioc.use(Foo)).toThrow(`Resolve [Closure Foo] does not exists.`);
+            expect(() => ioc.use(new Foo as any)).toThrow(`Resolve [object Foo] does not exists.`);
+            expect(() => ioc.use((() => undefined) as any)).toThrow(`Resolve [Closure] does not exists.`);
+            expect(() => ioc.use((function() {}) as any)).toThrow(`Resolve [Closure] does not exists.`);
+            expect(() => ioc.use({} as any)).toThrow(`Resolve [object Object] does not exists.`);
+            expect(() => ioc.use(Symbol.for('string'))).toThrow(`Resolve [Symbol(string)] does not exists.`);
+            expect(() => ioc.use(1 as any)).toThrow(`Resolve [1] does not exists.`);
         });
 
         it('Make inject', async () => {
@@ -227,6 +227,14 @@ describe('Container', () => {
 
             expect(ioc.make<Foo>(Foo).bar).toBe('bar');
         });
+
+        it('compileNamespace', async () => {
+            class User{}
+            expect(ioc.compileNamespace(User as any)).toBe(User);
+            expect(ioc.compileNamespace('App/User.create')).toBe('App/User.create');
+            expect(ioc.compileNamespace('/App/User.create')).toBe('App/User.create');
+            expect(ioc.compileNamespace('/User.create', 'App')).toBe('App/User.create');
+        });
     });
 
     describe('Container | Lookup', () => {
@@ -237,6 +245,7 @@ describe('Container', () => {
         });
 
         afterEach(async () => {
+            ioc.forgetInstances();
             ioc.flush();
             jest.resetModules()
             await fs.cleanup();
@@ -288,6 +297,7 @@ describe('Container', () => {
 
         afterEach(async () => {
             jest.resetModules();
+            ioc.forgetInstances();
             ioc.flush();
             await fs.cleanup();
         });
@@ -1133,5 +1143,84 @@ describe('Container', () => {
 
             expect(value.name).toBe('foofake');
         });
+
+        it('should throw exception when namespace is empty', async () => {
+            const ioc: any = Container.getInstance();
+            expect(() => ioc.fake(undefined)).toThrow();
+            expect(() => ioc.fake(null)).toThrow();
+            expect(() => ioc.fake(0)).toThrow();
+        });
+
+        it('should auto create closure when concrete is class', async () => {
+            const ioc: any = Container.getInstance();
+            class A {};
+            ioc.fake('name', A);
+        });
+
+        it('should throw error when useFake to fake is not define', async () => {
+            const ioc: any = Container.getInstance();
+            expect(()=>ioc.useFake('name')).toThrow(`Cannot find fake for name`);
+        });
+
+        it('work fine with esm export default', async () => {
+            await fs.add('Bar.ts', `export default class Bar {
+      public name = 'bar'
+    }`);
+            const ioc: Container = Container.getInstance();
+            ioc.autoload(fs.basePath, 'App')
+
+            class BarFake {
+                public name = 'barfake'
+
+                public getName () {
+                    return this.name
+                }
+            }
+
+            ioc.useProxies()
+
+            const value: any = ioc.use('App/Bar')
+            expect(new (value)().name).toBe('bar');
+
+            ioc.fake('App/Bar', () => {
+                return BarFake
+            })
+
+            expect(new (value)().name).toBe('barfake');
+        });
+    });
+
+    describe('Container | instance', () => {
+        it('test', async () => {
+            Container.instance = undefined;
+            const ioc = Container.getInstance<Container | any>();
+
+            // ioc.singleton('test', () => 'fasfas');
+            ioc.instance('test', 'askfms');
+            class Bar {
+                get bajsd() {
+                    return 1;
+                }
+                nguyen() {};
+            }
+
+            const bar: any = new Bar();
+            console.log(bar.hasOwnProperty('bajsd'), Reflect.has(bar, Symbol.toStringTag));
+            ioc['test'];
+            ioc['test'];
+            ioc['test'];
+            ioc['test'];
+            ioc.nguyen = 'nguyen';
+            ioc._instances = new Map<any, any>();
+            console.log('_instances' in ioc)
+            // console.log(ioc.use('nguyen'));
+            // ioc.instance('test', '1232');
+            // ioc.instance('test', '12324');
+            // ioc.test = 'askgmskm';
+            // console.log(ioc['test']);
+            // console.log(ioc['test']);
+            // console.log(ioc['test']);
+        });
     });
 });
+

@@ -35,6 +35,11 @@ export class Application extends Container implements ApplicationContract{
 
     protected _instances = new Map();
 
+    public environment = undefined;
+
+    protected _environmentPath: string = undefined;
+    protected _environmentFile: string = '.env';
+
     constructor(basePath: string = null) {
         super();
 
@@ -60,14 +65,6 @@ export class Application extends Container implements ApplicationContract{
 
     public configPath() {
         return this._basePath + '/config';
-    }
-
-    public instance(name: string, instance: any) {
-        this[name] = instance;
-    }
-
-    public getter(name, callback) {
-        (this as any).constructor.getter(name, callback);
     }
 
     protected registerBaseBindings() {
@@ -220,9 +217,6 @@ export class Application extends Container implements ApplicationContract{
         this.serviceProviders = [];
         this._bootedCallbacks = [];
     }
-
-    protected _environmentPath: string;
-    protected _environmentFile: string = '.env';
 
     public environmentPath() {
         return this._environmentPath || process.cwd();

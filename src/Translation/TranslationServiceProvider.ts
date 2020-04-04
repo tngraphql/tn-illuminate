@@ -28,8 +28,6 @@ export class TranslationServiceProvider extends ServiceProvider{
 
             return res;
         });
-
-        this.app.getter('translator', () => this.app.use('translator'));
     }
 
     boot() {

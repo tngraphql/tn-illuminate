@@ -5,6 +5,7 @@
  * Time: 10:08 AM
  */
 import { Exception } from '@poppinss/utils';
+import { NameSapceType } from '../Container/Container';
 
 const toString = Function.prototype.toString
 
@@ -53,4 +54,27 @@ export function isEsm (value: any): boolean {
  */
 export function isPrimtiveConstructor (value: any): boolean {
     return [String, Function, Object, Date, Number, Boolean].indexOf(value) > -1
+}
+
+/**
+ * Return a string of namespace type
+ *
+ * @param namespace
+ */
+export function namespaceToString(namespace: NameSapceType) {
+    if ( typeof namespace === 'function') {
+        if ( namespace.name ) {
+            return `Closure ${namespace.name}`;
+        }
+        return `Closure`;
+    }
+
+    if ( typeof namespace === 'object' ) {
+        if ( (namespace as any).constructor ) {
+            return `object ${ (namespace as any).constructor.name }`;
+        }
+        return `object`;
+    }
+
+    return String(namespace);
 }

@@ -60,7 +60,12 @@ async function main() {
 
     app.useProxies();
     const user = app.use<User>('tested');
-    console.log(user);
+    class A{}
+    const key: any = {};
+    // app.bind('11254125' as any, () => 'nguyen');
+    // app[key] = 'nguyen';
+    console.log(app.use(key));
+
 }
 
 main();

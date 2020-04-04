@@ -246,7 +246,7 @@ describe('Application', () => {
     });
 
     describe('App | instance', () => {
-        let app: Application;
+        let app: Application | any;
         beforeEach(() => {
             app = new Application(fs.basePath);
         })
@@ -259,7 +259,17 @@ describe('Application', () => {
                 register = true;
             }));
 
-            expect(app.test.register).toBe(true);
+            expect(app.test.register).toBeTruthy();
+            expect(app.use('test').register).toBeTruthy();
+            expect(app._instances.get('test')).toEqual({
+                register: true
+            })
+            app.test = {
+                register: false
+            };
+
+            expect(app.test.register).toBeFalsy();
+            expect(app.use('test').register).toBeFalsy();
         });
 
         it('instance config', async () => {

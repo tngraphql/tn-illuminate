@@ -30,6 +30,6 @@ export class HandleExceptions {
     public async bootstrap(app: Application) {
         this.app = app;
 
-        app.getter('ExceptionHandler', () => new ExceptionHandler());
+        app.singleton('ExceptionHandler', () => new ExceptionHandler());
     }
 }

@@ -54,6 +54,9 @@ describe('Command | List routes', () => {
 
         app.route.query('about', 'Handle.about');
         app.route.query('contact', 'Handle.contact').middleware(['auth', 'acl:admin']);
+        app.route.query('closure', 'Handle.closure').middleware(async function(context, next) {
+            await next();
+        });
 
         const listRoutes: RouteListCommand = new RouteListCommand(app, kernel.getAce());
 
@@ -73,6 +76,14 @@ describe('Command | List routes', () => {
                 name: 'contact',
                 handler: 'Handle.contact',
                 middleware: ['auth', 'acl:admin']
+            },
+            {
+                "handler": "Handle.closure",
+                "method": "query",
+                "middleware": [
+                    "Closure"
+                ],
+                "name": "closure"
             }
         ]);
     });

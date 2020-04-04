@@ -9,7 +9,7 @@ import * as path from 'path';
 import { normalize } from 'path';
 import { InvalidArgumentException } from './InvalidArgumentException';
 import { LogicException } from './LogicException';
-import { ensureIsFunction, isClass, isEsm, isObject } from '../utils';
+import { ensureIsFunction, isClass, isEsm, isObject, namespaceToString } from '../utils';
 import { Injector } from './Injector';
 import { Resovler } from './Resovler';
 import { Macroable } from 'macroable/build';
@@ -35,7 +35,7 @@ export type LookupNode = {
 
 export type BindCallback = (app?: Container) => unknown
 
-export type NameSapceType = Function | string;
+export type NameSapceType = Function | string | symbol;
 
 /**
  * Shape of autoloaded cache entry
@@ -45,14 +45,40 @@ export type AutoloadCacheItem = {
     cachedValue: any,
 }
 
-export class Container extends Macroable {
-    /**
-     * Required by macroable
-     */
-    protected static macros = {}
-    protected static getters = {}
+const handler = {
+    get<T extends Container>(target: T, p: string | number | symbol, receiver: any): any {
+        if ( ! Reflect.has(target, p)) {
+            if ( ['asymmetricMatch', Symbol.iterator, Symbol.toStringTag].includes(p as any) ) {
+                return;
+            }
 
-    static instance: Container;
+            return target.make(p as string);
+        }
+        return target[p];
+    },
+    set(target: any, p: string | number | symbol, value: any, receiver: any): boolean {
+        if ( ! Reflect.has(target, p) ) {
+            if ( [Symbol.iterator, Symbol.toStringTag].includes(p as any) ) {
+                return;
+            }
+
+            target.bind(p, typeof value === 'function' ? value : () => {
+                return value;
+            });
+
+            return true;
+        }
+
+        return Reflect.set(target, p, value, receiver);
+    }
+}
+
+export class Container {
+    constructor() {
+        return new Proxy(this, handler);
+    }
+
+    static instance: Container = undefined;
 
     private bindings: Map<NameSapceType, Binding> = new Map<NameSapceType, Binding>();
 
@@ -83,6 +109,8 @@ export class Container extends Macroable {
 
     private _proxiesEnabled: boolean = false;
 
+    protected _instances: Map<any, any> = new Map<any, any>();
+
     /**
      * Flush the container of all bindings and resolved instances.
      *
@@ -101,12 +129,12 @@ export class Container extends Macroable {
      *
      * @return static
      */
-    public static getInstance(): any {
+    public static getInstance<T = any>(): T {
         if ( ! this.instance ) {
             this.instance = new this;
         }
 
-        return this.instance;
+        return this.instance as any;
     }
 
     /**
@@ -168,7 +196,7 @@ export class Container extends Macroable {
         const lookedupNode = this.lookup(namespace);
 
         if ( ! lookedupNode ) {
-            throw new BindingResolutionException(`Resolve [${ namespace }] does not exists.`);
+            throw new BindingResolutionException(`Resolve [${ namespaceToString(namespace) }] does not exists.`);
         }
 
         let value: any = this.resolve(lookedupNode);
@@ -177,24 +205,19 @@ export class Container extends Macroable {
             return value as T;
         }
 
-        /**
-         * Wrap and return `esm` module default exports to proxy
-         */
-        if ( isEsm(value) ) {
-            if ( value.default ) {
-                value = Object.assign({}, value, {
-                    default: this.wrapAsProxy(lookedupNode.namespace, value.default),
-                })
-            }
-            return value as T
-        }
         return this.wrapAsProxy<T>(lookedupNode.namespace, value)
+    }
+
+    public instance<T>(name: string, instance: any): T {
+        this._instances.set(name, instance);
+
+        return instance;
     }
 
     public useFake<T>(namespace: NameSapceType, value): T {
         const fake = this._fakes.get(namespace)
         if ( ! fake ) {
-            throw new Error(`Cannot find fake for ${ namespace }`)
+            throw new Error(`Cannot find fake for ${ namespaceToString(namespace) }`)
         }
 
         fake.cachedValue = fake.cachedValue || fake.value(this, value);
@@ -239,6 +262,8 @@ export class Container extends Macroable {
         }
 
         ensureIsFunction(concrete, 'ioc.bind expect 2nd argument to be a function');
+
+        this.dropStaleInstances(namespace);
 
         if ( isClass(concrete) ) {
             concrete = this.getClosure(namespace, concrete);
@@ -330,7 +355,7 @@ export class Container extends Macroable {
         const lookedupNode = this.lookup(concrete);
 
         if ( ! lookedupNode ) {
-            throw new BindingResolutionException(`Resolve [${ concrete }] does not exists.`);
+            throw new BindingResolutionException(`Resolve [${ namespaceToString(concrete) }] does not exists.`);
         }
 
         let value = this.resolveAndMake(lookedupNode, args, binding);
@@ -383,17 +408,20 @@ export class Container extends Macroable {
     private resolveBinding(namespace: NameSapceType, args = []) {
         const binding = this.bindings.get(namespace);
 
-        if ( ! binding ) {
-            throw new Error(`Cannot resolve ${ namespace } binding from the IoC Container`)
+        const needsContextualBuild = (args && args.length);
+
+        if ( this._instances.has(namespace) && ! needsContextualBuild ) {
+            return this._instances.get(namespace);
         }
 
-        let value: any;
-        if ( binding.singleton && binding.cachedValue !== undefined ) {
-            value = binding.cachedValue;
-        } else if ( binding.singleton ) {
-            value = binding.cachedValue = binding.value.bind(binding.value, this).apply(null, args);
-        } else {
-            value = binding.value.bind(binding.value, this).apply(null, args);
+        if ( ! binding ) {
+            throw new Error(`Cannot resolve ${ namespaceToString(namespace) } binding from the IoC Container`)
+        }
+
+        let value = binding.value.bind(binding.value, this).apply(null, args);
+
+        if ( binding.singleton && ! needsContextualBuild ) {
+            this.instance(namespace as string, value);
         }
 
         return value;
@@ -457,7 +485,8 @@ export class Container extends Macroable {
         }
         if ( namespace.startsWith('/') ) {
             namespace = namespace.substr(1);
-        } else if ( prefixNamespace ) {
+        }
+        if ( prefixNamespace ) {
             namespace = `${ prefixNamespace.replace(/\/$/, '') }/${ namespace }`;
         }
         return namespace;
@@ -498,6 +527,13 @@ export class Container extends Macroable {
             return {
                 type: 'autoload',
                 namespace: namespace,
+            }
+        }
+
+        if ( this._instances.has(namespace) ) {
+            return {
+                type: 'binding',
+                namespace: namespace
             }
         }
 
@@ -642,5 +678,24 @@ export class Container extends Macroable {
      */
     public restore(name: NameSapceType) {
         this._fakes.delete(name)
+    }
+
+    /**
+     * Clear all of the instances from the container.
+     *
+     * @return void
+     */
+    public forgetInstances(): void {
+        this._instances = new Map<any, any>();
+    }
+
+    /**
+     * Drop all of the stale instances and aliases.
+     *
+     * @param  string  $abstract
+     * @return void
+     */
+    protected dropStaleInstances(name: NameSapceType) {
+        this._instances.delete(name);
     }
 }

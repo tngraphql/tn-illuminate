@@ -28,9 +28,5 @@ export class EventServiceProvider {
             emitter.transport = new Emittery() as any;
             return emitter;
         });
-
-        this.app.getter('events', function () {
-            return this.use('events');
-        });
     }
 }

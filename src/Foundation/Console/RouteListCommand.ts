@@ -13,6 +13,7 @@ import { Inject } from '../../Decorators/Inject';
 import { RouteStore } from '../Routing/RouteStore';
 import { ApplicationContract } from '../../Contracts/ApplicationContract';
 import { getMetadataStorage } from '@tngraphql/graphql/dist/metadata/getMetadataStorage';
+import { namespaceToString } from '../../utils';
 
 const Table = require('cli-table3');
 
@@ -58,7 +59,7 @@ export class RouteListCommand extends BaseCommand {
             const row = [
                 `${ this.colors.dim(route.method) }`,
                 `${ route.name }`,
-                typeof (route.handler) === 'function' ? 'Closure' : route.handler,
+                namespaceToString(route.handler),
                 route.middleware.join(',')
             ];
             table.push(row);
@@ -79,7 +80,7 @@ export class RouteListCommand extends BaseCommand {
                                            .map(x => x.middlewares);
 
             const middleware = route
-                ? [...route.middleware, ...md].map((one) => typeof (one) === 'function' ? 'Closure' : one)
+                ? [...route.middleware, ...md].map((one) => namespaceToString(one))
                 : [];
 
             return {

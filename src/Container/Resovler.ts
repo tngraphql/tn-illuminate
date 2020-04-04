@@ -71,7 +71,9 @@ export class Resovler {
 
         if (namespace.startsWith('/')) {
             namespace = namespace.substr(1)
-        } else if (prefixNamespace) {
+        }
+
+        if (prefixNamespace) {
             namespace = `${prefixNamespace.replace(/\/$/, '')}/${namespace}`
         }
 
