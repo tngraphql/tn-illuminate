@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Set up MySQL 5.7
-        uses: mirromutth/mysql-action@master
+        uses: actions/checkout@v2
         with:
           mysql version: 5.7
           mysql database: test
