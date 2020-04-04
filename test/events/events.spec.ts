@@ -10,6 +10,8 @@
 import {Application, GraphQLKernel} from '../../src/Foundation';
 import { event } from '../../src/Support/helpers';
 import {EventServiceProvider} from "../../src/Support/EventServiceProvider";
+import { Event } from '../../src/Support/Facades';
+import { Facade } from '../../src/Support/Facade';
 
 describe('Events', () => {
     describe('Events | Event', () => {
@@ -537,6 +539,18 @@ describe('Events', () => {
             await app.register(new EventService(app));
 
             Event.emit(UserCreated, new UserCreated({id: 1}))
+        });
+    });
+
+    describe('Fake Emitter', () => {
+        it('collect events within memory with fake emitter', async () => {
+            const app = new Application(__dirname);
+            Facade.clearResolvedInstances();
+            Facade.setFacadeApplication(app);
+            Event.fake();
+            Event.clear();
+            await Event.emit('new:user', { id: 1 });
+            expect(Event.transport.events).toEqual([{ event: 'new:user', data: { id: 1 } }]);
         });
     });
 });

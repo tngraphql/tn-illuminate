@@ -11,10 +11,15 @@ import { ApplicationContract } from '../Contracts/ApplicationContract';
  */
 
 export class Facade {
-    static _instance: { [key: string]: any } = {};
+    /**
+     * The resolved object instances.
+     */
+    static _instances: { [key: string]: any } = {};
 
-    static _namespace: string;
-
+    /**
+     * The application instance being facaded.
+     *
+     */
     static app: ApplicationContract;
 
     /**
@@ -23,8 +28,8 @@ export class Facade {
      * @param namespace
      * @param instance
      */
-    static swap(namespace, instance) {
-        this._instance[namespace] = instance;
+    static swap(namespace, instance): void {
+        this._instances[namespace] = instance;
         if ( this.app ) {
             const node = this.app.lookup(namespace);
             if ( node ) {
@@ -34,12 +39,15 @@ export class Facade {
         }
     }
 
-    static create<T>(namespace: string, handler?: any) {
-        const base: any = {
-            __ref: null
-        };
-        this._instance[namespace] = undefined;
-        return new Proxy(base, {
+    /**
+     * Create facade instance
+     *
+     * @param namespace
+     * @param handler
+     */
+    static create<T>(namespace: string, handler?: any): T {
+        this._instances[namespace] = undefined;
+        return new Proxy({}, {
             get: (target, prop) => {
                 if ( handler && handler[prop] ) {
                     if ( typeof handler[prop] === 'function' ) {
@@ -47,22 +55,31 @@ export class Facade {
                     }
                     return handler[prop];
                 }
-                if ( ! this._instance[namespace] ) {
+                if ( ! this._instances[namespace] ) {
                     if ( this.app ) {
-                        this._instance[namespace] = this.app.use(namespace);
+                        this._instances[namespace] = this.app.use(namespace);
                     }
                 }
-                return this._instance[namespace][prop];
+                return this._instances[namespace][prop];
             },
         }) as T;
     }
 
+    /**
+     * Clear all of the resolved instances.
+     *
+     */
     static clearResolvedInstances() {
-        for( let namespace of Object.keys(this._instance) ) {
-            this._instance[namespace] = undefined;
+        for( let namespace of Object.keys(this._instances) ) {
+            this._instances[namespace] = undefined;
         }
     }
 
+    /**
+     * Set the application instance.
+     *
+     * @param app
+     */
     static setFacadeApplication(app: ApplicationContract) {
         this.app = app;
     }

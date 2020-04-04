@@ -18,6 +18,8 @@ export type AnyHandler<T extends any = any> = ((event: string, data: T) => Promi
  * `emittery`.
  */
 export interface EmitterTransportContract {
+    events: any;
+
     on(event: string, handler: EventHandler): void;
     once(event: string): Promise<any>;
     onAny(handler: AnyHandler): void;
@@ -104,3 +106,8 @@ export interface EmitterContract<T extends any = any> {
  */
 export type EventName = string | symbol | Function;
 
+export interface FakeEmitterContract extends EmitterContract {
+    events: any[]
+
+    clear(): any;
+}
