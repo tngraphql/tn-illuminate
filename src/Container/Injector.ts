@@ -9,7 +9,7 @@
  */
 import 'reflect-metadata';
 import { Container } from './Container';
-import { isPrimtiveConstructor } from '../utils';
+import { isClass, isPrimtiveConstructor } from '../utils';
 import { InvalidInjectionException } from './InvalidInjectionException';
 import { OPTIONAL_DEPS_METADATA } from '../Decorators/Inject';
 
@@ -63,7 +63,10 @@ export class Injector {
      * @param {Type<any>} target
      * @returns {T}
      */
-    injectDependencies<T>(target: Type<any>, binding = true, args: any = []): T {
+    injectDependencies<T>(target: Type<any> | any, binding = true, args: any = []): T {
+        if (!isClass(target) || target.makePlain === true) {
+            return target
+        }
 
         // tokens are required dependencies, while injections are resolved tokens from the Injector
         const tokens = Reflect.getMetadata('design:paramtypes', target) || [];
@@ -77,7 +80,6 @@ export class Injector {
         const value = new target(...injections);
 
         this.applyPropertyHandlers(target, value);
-
         return value;
     }
 

@@ -9,11 +9,12 @@ import * as path from 'path';
 import { normalize } from 'path';
 import { InvalidArgumentException } from './InvalidArgumentException';
 import { LogicException } from './LogicException';
-import { ensureIsFunction, isClass, isEsm } from '../utils';
+import { ensureIsFunction, isClass, isEsm, isObject } from '../utils';
 import { Injector } from './Injector';
-import _ = require('lodash');
 import { Resovler } from './Resovler';
 import { Macroable } from 'macroable/build';
+import { IocProxyClass, IoCProxyObject } from './IoCProxy';
+import _ = require('lodash');
 
 export type Binding = {
     id: any,
@@ -76,7 +77,11 @@ export class Container extends Macroable {
      */
     private autoloadsCache: Map<string, AutoloadCacheItem> = new Map<string, AutoloadCacheItem>();
 
-    private injector = new Injector(this)
+    private injector = new Injector(this);
+
+    private _fakes: Map<NameSapceType, any> = new Map<NameSapceType, any>();
+
+    private _proxiesEnabled: boolean = false;
 
     /**
      * Flush the container of all bindings and resolved instances.
@@ -112,6 +117,37 @@ export class Container extends Macroable {
     }
 
     /**
+     * Instruct IoC container to use proxies when returning
+     * bindings from `use` and `make` methods.
+     */
+    public useProxies(enable: boolean = true): this {
+        this._proxiesEnabled = !! enable
+        return this
+    }
+
+    /**
+     * Wraps object and class to a proxy for enabling the fakes
+     * API
+     */
+    private wrapAsProxy<T extends any>(namespace: NameSapceType, value: any): T {
+        /**
+         * Wrap objects inside proxy
+         */
+        if ( isObject(value) ) {
+            return (new IoCProxyObject(namespace, value, this as any) as unknown) as T
+        }
+
+        /**
+         * Wrap class inside proxy
+         */
+        if ( isClass(value) ) {
+            return (IocProxyClass(namespace, value, this as any) as unknown) as T
+        }
+
+        return value
+    }
+
+    /**
      * Use the binding by resolving it from the container. The resolve method
      * does some great work to resolve the value for you.
      *
@@ -128,14 +164,49 @@ export class Container extends Macroable {
      * app.use('lodash')              // Fallback to Node.js require
      * ```
      */
-    public use<T>(namespace: NameSapceType): T {
+    public use<T = any>(namespace: NameSapceType): T {
         const lookedupNode = this.lookup(namespace);
 
         if ( ! lookedupNode ) {
             throw new BindingResolutionException(`Resolve [${ namespace }] does not exists.`);
         }
 
-        return this.resolve(lookedupNode);
+        let value: any = this.resolve(lookedupNode);
+
+        if ( ! this._proxiesEnabled ) {
+            return value as T;
+        }
+
+        /**
+         * Wrap and return `esm` module default exports to proxy
+         */
+        if ( isEsm(value) ) {
+            if ( value.default ) {
+                value = Object.assign({}, value, {
+                    default: this.wrapAsProxy(lookedupNode.namespace, value.default),
+                })
+            }
+            return value as T
+        }
+        return this.wrapAsProxy<T>(lookedupNode.namespace, value)
+    }
+
+    public useFake<T>(namespace: NameSapceType, value): T {
+        const fake = this._fakes.get(namespace)
+        if ( ! fake ) {
+            throw new Error(`Cannot find fake for ${ namespace }`)
+        }
+
+        fake.cachedValue = fake.cachedValue || fake.value(this, value);
+        return fake.cachedValue as T
+    }
+
+    /**
+     * A boolean telling if a fake exists for a binding or
+     * not.
+     */
+    public hasFake(namespace: NameSapceType): boolean {
+        return this._fakes.has(namespace)
     }
 
     /**
@@ -183,6 +254,41 @@ export class Container extends Macroable {
     }
 
     /**
+     * Register a fake for an existing binding. The fakes only work when
+     * `TNGRAPHQL_IOC_PROXY` environment variable is set to `true`. tngraphql
+     * will set it to true automatically during testing.
+     *
+     * NOTE: The return value of fakes is always cached, since multiple
+     * calls to `use` after that should point to a same return value.
+     *
+     * @example
+     * ```ts
+     * app.fake('App/User', function () {
+     *  return new FakeUser()
+     * })
+     * ```
+     */
+    public fake(namespace: NameSapceType, concrete: Function | BindCallback) {
+        if ( ! namespace ) {
+            throw new InvalidArgumentException('Empty namespace cannot be used as IoC container reference');
+        }
+
+        ensureIsFunction(concrete, 'ioc.bind expect 2nd argument to be a function');
+
+        if ( isClass(concrete) ) {
+            concrete = this.getClosure(namespace, concrete);
+        }
+
+        const binding: Binding = {
+            id: namespace,
+            value: concrete as BindCallback,
+            singleton: false
+        };
+
+        this._fakes.set(namespace, binding);
+    }
+
+    /**
      * Get the callback to be used when building a type.
      *
      * @param namespace
@@ -193,7 +299,8 @@ export class Container extends Macroable {
         return function() {
             const args = _.toArray(arguments);
             args.shift();
-            return instance.make(concrete, args, false);
+            return instance.injector.injectDependencies(concrete as any, false, args);
+            // return instance.make(concrete, args, false);
         }
     }
 
@@ -208,17 +315,34 @@ export class Container extends Macroable {
         this.aliases[alias] = namespace;
     }
 
-    public make<T>(concrete: NameSapceType, args = [], binding = true): T {
-        if ( typeof concrete === 'string' ) {
-            const lookedupNode = this.lookup(concrete);
-
-            if ( ! lookedupNode ) {
-                throw new BindingResolutionException(`Resolve [${ concrete }] does not exists.`);
-            }
-
-            return this.resolveAndMake(lookedupNode, args, binding);
+    public make<T = any>(concrete: NameSapceType, args = [], binding = true): T {
+        /**
+         * If value is not a namespace string and not a lookup node,
+         * then we make the value as it is.
+         *
+         * Also we do not support fakes for raw values and hence there is
+         * no point in wrapping it to a proxy
+         */
+        if ( typeof (concrete) !== 'string' && ! this.lookup(concrete) ) {
+            return this.injector.injectDependencies(concrete as any, binding, args) as T
         }
-        return this.injector.injectDependencies(concrete as any, binding, args);
+
+        const lookedupNode = this.lookup(concrete);
+
+        if ( ! lookedupNode ) {
+            throw new BindingResolutionException(`Resolve [${ concrete }] does not exists.`);
+        }
+
+        let value = this.resolveAndMake(lookedupNode, args, binding);
+
+        /**
+         * When not using proxies, then we must return the value untouched
+         */
+        if ( ! this._proxiesEnabled || isEsm(value) ) {
+            return value as T
+        }
+
+        return this.wrapAsProxy<T>(lookedupNode.namespace, value);
     }
 
     /**
@@ -328,13 +452,13 @@ export class Container extends Macroable {
     }
 
     public compileNamespace(namespace: string, prefixNamespace?: string): string {
-        if ( typeof namespace !== 'string') {
+        if ( typeof namespace !== 'string' ) {
             return namespace;
         }
-        if (namespace.startsWith('/')) {
+        if ( namespace.startsWith('/') ) {
             namespace = namespace.substr(1);
-        } else if (prefixNamespace) {
-            namespace = `${prefixNamespace.replace(/\/$/, '')}/${namespace}`;
+        } else if ( prefixNamespace ) {
+            namespace = `${ prefixNamespace.replace(/\/$/, '') }/${ namespace }`;
         }
         return namespace;
     }
@@ -453,7 +577,10 @@ export class Container extends Macroable {
      * ```
      */
     public isAutoloadNamespace(namespace: string): boolean {
-        return !! this.getAutoloadBaseNamespace(namespace)
+        if ( typeof namespace !== 'string' ) {
+            return false;
+        }
+        return !! this.getAutoloadBaseNamespace(namespace);
     }
 
     /**
@@ -502,11 +629,18 @@ export class Container extends Macroable {
      * improve the lookup speed, we suggest keeping a reference to
      * the output of this method to leverage caching
      */
-    public getResolver (
+    public getResolver(
         fallbackMethod?: string,
         rcNamespaceKey?: string,
         fallbackNamespace?: string,
     ): Resovler {
         return new Resovler(this, fallbackMethod, rcNamespaceKey, fallbackNamespace);
+    }
+
+    /**
+     * Restore the fake
+     */
+    public restore(name: NameSapceType) {
+        this._fakes.delete(name)
     }
 }
