@@ -109,4 +109,27 @@ describe('facade', () => {
         expect(bar.getName()).toBe('barfake');
         expect(app.make('App/Bar').getName()).toBe('barfake');
     });
+
+    it('inject method, properties to a facade', async () => {
+        const app = new Application();
+        app.bind('App/Bar', () => {
+            return {
+                getName() {
+                    return 'bar';
+                }
+            }
+        });
+
+        Facade.clearResolvedInstances();
+        Facade.setFacadeApplication(app);
+        const Bar = Facade.create<any>('App/Bar', {
+            name: 'bar',
+            fullname: function() {
+                return 'foo';
+            }
+        });
+
+        expect(Bar.fullname()).toBe('foo');
+        expect(Bar.name).toBe('bar');
+    });
 })
