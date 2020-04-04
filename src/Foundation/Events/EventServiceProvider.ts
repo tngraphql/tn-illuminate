@@ -24,7 +24,7 @@ export class EventServiceProvider {
 
     register() {
         this.app.singleton('events', () => {
-            const emitter: EmitterContract = new Emitter(this.app)
+            const emitter: EmitterContract = new Emitter(this.app) as any;
             emitter.transport = new Emittery() as any;
             return emitter;
         });

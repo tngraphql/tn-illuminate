@@ -28,7 +28,7 @@ export class LoadEnvironmentVariables {
         Env.setFactory(new EnvFactory());
         const { envContents, testEnvContent } = envLoader(app.environmentFilePath());
         const env = Env.getFactory();
-        env.process(envContents, true);
+        env.process(envContents, false);
         env.process(testEnvContent, true);
     }
 }
