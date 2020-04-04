@@ -10,9 +10,9 @@
 
 import { Application } from '../src/Foundation/Application';
 import { Container } from '../src/Container/Container';
+import * as path from 'path';
 import { join } from 'path';
 import { Filesystem } from '@poppinss/dev-utils/build';
-import * as path from "path";
 import { Service } from '../src/Decorators/Service';
 import { Repository } from '../src/config/Repository';
 import { requireAll } from '@poppinss/utils/build';
@@ -22,6 +22,11 @@ import { GraphQLKernel } from '../src/Foundation/GraphQL';
 const fs = new Filesystem(join(__dirname, './app'))
 
 describe('Application', () => {
+    const OLD_ENV = process.env;
+
+    beforeEach(() => {
+        process.env = { ...OLD_ENV };
+    })
     beforeAll(async () => {
     });
     afterEach(async () => {
@@ -143,7 +148,7 @@ describe('Application', () => {
             try {
                 await app.register(providerPath);
             } catch (e) {
-                expect(e.message).toBe( `Make sure export default or export ${path.basename(providerPath)} the provider from ${providerPath}`)
+                expect(e.message).toBe(`Make sure export default or export ${ path.basename(providerPath) } the provider from ${ providerPath }`)
             }
         });
 
@@ -274,14 +279,15 @@ describe('Application', () => {
             class MyProvider {
                 registered: boolean;
 
-                constructor () {
+                constructor() {
                     this.registered = false;
                 }
 
-                register () {
+                register() {
                     this.registered = true
                 }
             }
+
             app.instance('config', new Repository({
                 app: {
                     providers: [
@@ -333,7 +339,8 @@ describe('Application', () => {
         })
 
         it('Make resolve', async () => {
-            class Bar{}
+            class Bar {
+            }
 
             @Service()
             class Foo {
@@ -437,7 +444,7 @@ describe('Application', () => {
             const kernel = new GraphQLKernel(app);
             await kernel.handle();
 
-            const {Env} = require('../src/Support/Env');
+            const { Env } = require('../src/Support/Env');
             expect(Env.get('APP_NAME')).toBe('illuminate');
         });
 
@@ -447,7 +454,7 @@ describe('Application', () => {
             const kernel = new GraphQLKernel(app);
             await kernel.handle();
 
-            const {Env} = require('../src/Support/Env');
+            const { Env } = require('../src/Support/Env');
 
             expect(Env.get('APP_NAME')).toBe('testing');
         });
@@ -458,7 +465,7 @@ describe('Application', () => {
             const kernel = new GraphQLKernel(app);
             await kernel.handle();
 
-            const {Env} = require('../src/Support/Env');
+            const { Env } = require('../src/Support/Env');
             expect(Env.get('APP_NAME')).toBe('path');
             await fs.remove('.env');
         });
