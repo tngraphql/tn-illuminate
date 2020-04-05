@@ -29,13 +29,6 @@ export function merge(...args) {
     return (_ as any).mergeWith(...args, customizer);
 }
 
-export function isArrayRule(data: any) {
-    if ( Array.isArray(data) && data.length) {
-        return data[0] instanceof RuleValue;
-    }
-    return false;
-}
-
 export function isClassRule(data: any) {
     if ( isClass(data) ) {
         return true;

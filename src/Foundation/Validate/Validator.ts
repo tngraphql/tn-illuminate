@@ -22,16 +22,7 @@ class ValidatorContainer {
     static container: any;
 }
 
-Validator.container = undefined;
 Validator.verifier = undefined;
-
-Validator.setContainer = function(value) {
-    this.container = value;
-}
-
-Validator.getContainer = function(): ApplicationContract {
-    return this.container;
-}
 
 Validator.setPresenceVerifier = function(presenceVerifier: PresenceVerifierInterface) {
     this.verifier = presenceVerifier;
@@ -41,19 +32,19 @@ Validator.getPresenceVerifier = function (): PresenceVerifierInterface {
     return this.verifier;
 }
 
-Validator.prototype._replaceWildCards = function(path, nums) {
+/*Validator.prototype._replaceWildCards = function(path, nums) {
     if ( ! nums ) {
         return path;
     }
 
     let path2 = path;
     nums.forEach(function(value) {
-        if ( ! Array.isArray(path2) && typeof path2 !== 'string' ) {
-            return path2;
-        }
-
         if ( Array.isArray(path2) ) {
             path2 = path2[0];
+        }
+
+        if ( typeof path2 !== 'string' ) {
+            return path2;
         }
 
         const pos = path2.indexOf('*');
@@ -67,9 +58,9 @@ Validator.prototype._replaceWildCards = function(path, nums) {
         path2 = path;
     }
     return path2;
-};
+};*/
 
-Validator.register('required', function(val, requirement, attribute) { // requirement parameter defaults to null
+/*Validator.register('required', function(val, requirement, attribute) { // requirement parameter defaults to null
     let str;
 
     if ( val === undefined || val === null ) {
@@ -84,7 +75,7 @@ Validator.register('required', function(val, requirement, attribute) { // requir
 
     return str.length > 0 ? true : false;
 
-}, ':attribute bắt buộc nhập.');
+}, ':attribute bắt buộc nhập.');*/
 
 /**
  *
@@ -105,16 +96,14 @@ Validator.registerImplicit('filled', function(val, requirement, attribute) { // 
 
 }, 'Trường :attribute không được bỏ trống.');
 
-Validator.registerImplicit('without_spaces', function(val, requirement, attribute) { // requirement parameter defaults to null
+/*Validator.registerImplicit('without_spaces', function(val, requirement, attribute) { // requirement parameter defaults to null
     return /^\S+$/g.test(String(val || ''));
-}, 'Trường :attribute không hợp lệ.');
+}, 'Trường :attribute không hợp lệ.');*/
 
 /**
  * unique:model,column,except,idColumn
  */
 Validator.registerAsync('unique', function(value, req, attribute, passes) { // requirement parameter defaults to null
-    // (new Unique(value, req, attribute, passes)).passes(attribute, value);
-
     let ruleValue = this.ruleValue;
     if ( typeof this.ruleValue !== 'object' ) {
         req = this.getParameters();
@@ -124,13 +113,13 @@ Validator.registerAsync('unique', function(value, req, attribute, passes) { // r
 
     const idColumn = ruleValue.ignore.idColumn || 'id';
 
-    Validator.getPresenceVerifier().getCount(ruleValue.model, ruleValue.column, value, ruleValue.ignore.id, idColumn, ruleValue.where).then(({total}) => {
-        if ( Array.isArray(value) && value.length > 1 && total !== value.length ) {
-            passes(false);
-        } else {
+    try {
+        Validator.getPresenceVerifier().getCount(ruleValue.model, ruleValue.column, value, ruleValue.ignore.id, idColumn, ruleValue.where).then(({total}) => {
             passes(! total);
-        }
-    });
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }, 'Trường :attribute đã có trong cơ sở dữ liệu.');
 
 /**
@@ -144,13 +133,17 @@ Validator.registerAsync('exists', function(value, req, attribute, passes) { // r
         ruleValue = Rule.exists(req[0], req[1]).exists;
     }
 
-    Validator.getPresenceVerifier().getCount(ruleValue.model, ruleValue.column, value, undefined, undefined, ruleValue.where).then(({total}) => {
-        if ( Array.isArray(value) && value.length > 1 && total !== value.length ) {
-            passes(false);
-        } else {
-            passes(!! total);
-        }
-    });
+    try {
+        Validator.getPresenceVerifier().getCount(ruleValue.model, ruleValue.column, value, undefined, undefined, ruleValue.where).then(({total}) => {
+            if ( Array.isArray(value) && value.length > 1 && total !== value.length ) {
+                passes(false);
+            } else {
+                passes(!! total);
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }, 'Giá trị đã chọn trong trường :attribute không hợp lệ.');
 
 export { Validator };

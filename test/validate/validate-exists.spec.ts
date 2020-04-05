@@ -1,9 +1,12 @@
 import { Filesystem } from '@poppinss/dev-utils/build';
 import { join } from 'path';
-import { Application, GraphQLKernel } from '../../src/Foundation';
+import { Application, GraphQLKernel, LoadConfiguration } from '../../src/Foundation';
 import { graphql } from 'graphql';
-import _ = require('lodash');
 import { cleanup, getDb, setup } from './helpers';
+import { Factory } from '../../src/Foundation/Validate/Factory';
+import { Rule } from '../../src/Foundation/Validate/Rule';
+import { DatabasePresenceVerifier } from '../../src/Foundation/Validate/DatabasePresenceVerifier';
+import _ = require('lodash');
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>
@@ -19,21 +22,100 @@ let fs = new Filesystem(join(__dirname, './validate_exits'));
 const message = 'Giá trị đã chọn trong trường name không hợp lệ.';
 
 describe('Exists', () => {
-    let schema;
-    beforeEach(async () => {
+    describe('Validate', () => {
+        let app;
+        let validator;
+        let db;
+        let verifier;
+        beforeAll(async () => {
+            app = new Application();
+            (new LoadConfiguration()).bootstrap(app);
+            validator = new Factory(app);
+            db = getDb();
+            verifier = new DatabasePresenceVerifier(db);
+            validator.setPresenceVerifier(verifier);
 
+            await setup();
+            await db.table('users').insert([
+                {
+                    name: 'nguyen2',
+                },
+                {
+                    name: 'nguyen3',
+                }
+            ]);
+        });
+
+        afterAll(async () => {
+            await cleanup();
+        });
+
+        it('should have validate a geven wildcard passes', async () => {
+
+            const validation = validator.make({ name: 'nguyen', }, {
+                name: 'exists:users,name'
+                // name: [
+                //     // {exists: { model: 'users', column: 'name', where: [] }},
+                //     Rule.exists('users', 'name')
+                // ]
+            });
+
+            expect(await validator.checkValidate(validation)).toBeTruthy();
+        });
+
+        it('should have validate a geven rule passes', async () => {
+
+            const validation = validator.make({ name: 'nguyen', }, {
+                name: [Rule.exists('users', 'name')]
+            });
+
+            expect(await validator.checkValidate(validation)).toBeTruthy();
+        });
+
+        it('should have validate a geven wildcard fails', async () => {
+
+            const validation = validator.make({ name: 'nguyen1', }, {
+                name: 'exists:users,name'
+            });
+
+            expect(await validator.checkValidate(validation)).toBeFalsy();
+        });
+
+        it('should have validate a geven many value passes', async () => {
+
+            const validation = validator.make({ name: ['nguyen2', 'nguyen3'], }, {
+                name: 'exists:users,name'
+            });
+
+            expect(await validator.checkValidate(validation)).toBeTruthy();
+        });
+
+        it('should have validate a geven many value fails', async () => {
+
+            const validation = validator.make({ name: ['nguyen1', 'nguyen3'], }, {
+                name: 'exists:users,name'
+            });
+
+            expect(await validator.checkValidate(validation)).toBeFalsy();
+        });
     });
-    afterEach(async () => {
-    });
 
-    afterAll(async () => {
-        await fs.cleanup();
-        await cleanup();
-    })
+    describe('graphql', () => {
+        let schema;
+        beforeEach(async () => {
 
-    beforeAll(async () => {
-        await setup()
-        await fs.add('config/app.ts', `
+        });
+        afterEach(async () => {
+        });
+
+        afterAll(async () => {
+            await fs.cleanup();
+            await cleanup();
+        })
+
+        beforeAll(async () => {
+            await setup()
+            await fs.add('config/app.ts', `
     import { RouterServiceProvider } from '../RouterServiceProvider';
 import { DatabaseServiceProvider } from '../../../../src/Database/DatabaseServiceProvider';
 import { ValidatorServiceProvider } from '../../../../src/Foundation/Validate/ValidatorServiceProvider';
@@ -48,7 +130,7 @@ export default {
 }
             
             `);
-        await fs.add('app/UserResolve.ts', `
+            await fs.add('app/UserResolve.ts', `
         import { Arg, Mutation, Query, Resolver } from '@tngraphql/graphql';
 import { ValidateArgs } from '../../../../src/Decorators/ValidateArgs';
 import { Rule } from '../../../../src/Foundation/Validate/Rule';
@@ -176,7 +258,7 @@ export class UserResolve {
     }
 }          
             `);
-        await fs.add('start/route.ts', `
+            await fs.add('start/route.ts', `
             import { Route } from '../../../../src/Support/Facades';
             
             Route.group(() => {
@@ -198,7 +280,7 @@ export class UserResolve {
             
             export = Route;
         `);
-        await fs.add('RouterServiceProvider.ts', `
+            await fs.add('RouterServiceProvider.ts', `
            import { RoutingServiceProvider } from '../../../src/Foundation/Routing/RoutingServiceProvider';
 export class RouterServiceProvider extends RoutingServiceProvider {
     _namespace = 'App';
@@ -210,107 +292,108 @@ export class RouterServiceProvider extends RoutingServiceProvider {
         
         `);
 
-        const app = new Application(fs.basePath);
+            const app = new Application(fs.basePath);
 
-        const kernel: GraphQLKernel = await app.make<GraphQLKernel>(GraphQLKernel);
+            const kernel: GraphQLKernel = await app.make<GraphQLKernel>(GraphQLKernel);
 
-        app.autoload(join(fs.basePath, 'app'), 'App');
+            app.autoload(join(fs.basePath, 'app'), 'App');
 
-        await kernel.handle();
+            await kernel.handle();
 
-        schema = await kernel.complie();
-    })
+            schema = await kernel.complie();
+        })
 
-    it('pass exists validate', async () => {
-        const query = `mutation {
+        it('pass exists validate', async () => {
+            const query = `mutation {
             passExistsMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
+            const res = await graphql(schema, query);
 
-        expect(res.errors).toBe(undefined);
-    });
+            expect(res.errors).toBe(undefined);
+        });
 
-    it('fall exists validate', async () => {
-        const query = `mutation {
+        it('fall exists validate', async () => {
+            const query = `mutation {
             fallExistsMutation(name:"nguyen2")
           }`;
 
-        const res = await graphql(schema, query);
+            const res = await graphql(schema, query);
 
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
-    });
+            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+        });
 
-    it('where not value', async () => {
-        const query = `mutation {
+        it('where not value', async () => {
+            const query = `mutation {
             existsWhereNotMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
-    });
+            const res = await graphql(schema, query);
+            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+        });
 
-    it('where is null', async () => {
-        const query = `mutation {
+        it('where is null', async () => {
+            const query = `mutation {
             existsWhereNullMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
-    });
+            const res = await graphql(schema, query);
+            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+        });
 
-    it('where is not null', async () => {
-        const query = `mutation {
+        it('where is not null', async () => {
+            const query = `mutation {
             existsWhereNotNullMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
+            const res = await graphql(schema, query);
 
-        expect(res.errors).toBe(undefined);
-    });
+            expect(res.errors).toBe(undefined);
+        });
 
-    it('where value', async () => {
-        const query = `mutation {
+        it('where value', async () => {
+            const query = `mutation {
             existsWhereValueMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
-        expect(res.errors).toBe(undefined);
-    });
+            const res = await graphql(schema, query);
+            expect(res.errors).toBe(undefined);
+        });
 
-    it('where use callback', async () => {
-        const query = `mutation {
+        it('where use callback', async () => {
+            const query = `mutation {
             existsWhereCallbackMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
-        expect(res.errors).toBe(undefined);
-    });
+            const res = await graphql(schema, query);
+            expect(res.errors).toBe(undefined);
+        });
 
-    it('where use multiple callback', async () => {
-        const query = `mutation {
+        it('where use multiple callback', async () => {
+            const query = `mutation {
             existsWhereMultipleCallbackMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
-    });
+            const res = await graphql(schema, query);
+            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+        });
 
-    it('where in', async () => {
-        const query = `mutation {
+        it('where in', async () => {
+            const query = `mutation {
             existsWhereInMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
-        expect(res.errors).toBe(undefined);
-    });
+            const res = await graphql(schema, query);
+            expect(res.errors).toBe(undefined);
+        });
 
-    it('where not in', async () => {
-        const query = `mutation {
+        it('where not in', async () => {
+            const query = `mutation {
             existsWhereNotInMutation(name:"nguyen")
           }`;
 
-        const res = await graphql(schema, query);
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            const res = await graphql(schema, query);
+            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+        });
     });
 });

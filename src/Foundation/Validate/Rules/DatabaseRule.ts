@@ -7,10 +7,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+import { isFuntion, uid } from '../../../utils';
 
-type Maybe<T> = T | T[];
+type OneOrMany<T> = T | T[];
 
-type ValueWhere = Maybe<string | number>;
+type ValueWhere = OneOrMany<string | number>;
+
+function assertWhereValue(value: string, name: string) {
+    if ( typeof value !== 'string') {
+        throw new TypeError(`${name} must be string`);
+    }
+}
 
 export abstract class DatabaseRule {
 
@@ -22,10 +29,18 @@ export abstract class DatabaseRule {
      */
     public where(name, ...args) {
         let where = {};
+        if ( isFuntion(args[0]) ) {
+            this[name].where.push(args[0]);
+            return this;
+        }
         if ( args.length === 1 ) {
-            this[name].where[args[0]] = args[0];
+            this[name].where.push(args[0]);
         } else {
-            this[name].where[args.shift()] = args.length === 1 ? String(args[0]) : args
+            this[name].where.push([
+                args.shift(),
+                args.length === 1 ? String(args[0]) : args
+            ]);
+            // this[name].where[args.shift()] = args.length === 1 ? String(args[0]) : args;
         }
 
         return this;
@@ -38,6 +53,9 @@ export abstract class DatabaseRule {
      * @param value
      */
     public whereNot(column: string, value: string) {
+        assertWhereValue(column, 'column');
+        assertWhereValue(value, 'value');
+
         return this.where(column, `!${ value }`);
     }
 
@@ -47,6 +65,7 @@ export abstract class DatabaseRule {
      * @param column
      */
     public whereNull(column: string) {
+        assertWhereValue(column, 'column');
         return this.where(column, null);
     }
 
@@ -56,6 +75,7 @@ export abstract class DatabaseRule {
      * @param column
      */
     public whereNotNull(column: string) {
+        assertWhereValue(column, 'column');
         return this.where(column, 'NOT_NULL');
     }
 
@@ -65,8 +85,9 @@ export abstract class DatabaseRule {
      * @param column
      * @param value
      */
-    public whereIn(column: string, value: Maybe<string | number>) {
-        return this.where(where => {
+    public whereIn(column: string, value: ValueWhere): this {
+        assertWhereValue(column, 'column');
+        return this.using(where => {
             where.whereIn(column, value)
         });
     }
@@ -77,8 +98,10 @@ export abstract class DatabaseRule {
      * @param column
      * @param value
      */
-    public whereNotIn(column: string, value: Maybe<string | number>) {
-        return this.where(query => {
+    public whereNotIn(column: string, value: ValueWhere): this {
+        assertWhereValue(column, 'column');
+
+        return this.using(query => {
             query.whereNotIn(column, value);
         });
     }
@@ -87,7 +110,7 @@ export abstract class DatabaseRule {
      * Register a custom query callback.
      * @param callback
      */
-    public using(callback: (query) => {}): this {
+    public using(callback: (query) => any): this {
         return this.where(callback);
     }
 }

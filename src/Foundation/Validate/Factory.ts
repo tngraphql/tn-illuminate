@@ -9,8 +9,9 @@
  */
 import { Validator } from './Validator';
 import { ApplicationContract } from '../../Contracts/ApplicationContract';
-import { RegisterAsyncCallback } from 'validatorjs';
+import { RegisterAsyncCallback, RegisterCallback } from 'validatorjs';
 import { PresenceVerifierInterface } from './PresenceVerifierInterface';
+const Rulers = require('validatorjs/src/rules');
 
 export class Factory {
     private resolver;
@@ -19,9 +20,38 @@ export class Factory {
     }
 
     make(data: any, rules: { [key: string]: any }, messages?: { [key: string]: any }) {
-        const validator = this.resolve(data, rules, messages);
+        const validation = this.resolve(data, rules, messages);
 
-        return validator;
+        return validation;
+    }
+
+    removeAsyncRules(rule: string) {
+        const asyncRules = new Set(Rulers.asyncRules);
+        asyncRules.delete(rule);
+
+        Rulers.asyncRules = Array.from(asyncRules);
+    }
+
+    removeImplicitRules(rule: string) {
+        const implicitRules = new Set(Rulers.implicitRules);
+        implicitRules.delete(rule);
+
+        Rulers.implicitRules = Array.from(implicitRules);
+    }
+
+    async checkValidate(validation) {
+        try {
+            await new Promise((resolve, reject) => {
+                validation.checkAsync(() => {
+                    resolve(true);
+                }, () => {
+                    reject(false);
+                });
+            });
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     resolve(data: any, rules: { [key: string]: any }, messages?: { [key: string]: any }) {
@@ -40,11 +70,19 @@ export class Factory {
         Validator.setPresenceVerifier(value);
     }
 
-    extend(rule: string, callback: RegisterAsyncCallback, message: string) {
-        Validator.registerAsync(rule, callback, message);
+    private convertToAsync(callback): RegisterAsyncCallback {
+        return async function(username, attribute, req, passes) {
+            passes(await callback.bind(this)(username, attribute, req))
+        };
     }
 
-    extendImplicit(rule: string, callback: RegisterAsyncCallback, message: string) {
-        Validator.registerImplicit(rule, callback, message);
+    extend(rule: string, callback: RegisterCallback, message: string) {
+        this.removeAsyncRules(rule);
+        Validator.registerAsync(rule, this.convertToAsync(callback), message);
+    }
+
+    extendImplicit(rule: string, callback: RegisterCallback, message: string) {
+        this.removeImplicitRules(rule);
+        Validator.registerAsyncImplicit(rule, this.convertToAsync(callback), message);
     }
 }

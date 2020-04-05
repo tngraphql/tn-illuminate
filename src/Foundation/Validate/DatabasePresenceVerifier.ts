@@ -17,8 +17,15 @@ export class DatabasePresenceVerifier implements PresenceVerifierInterface {
     constructor(public db: ConnectionResolverInterface) {
     }
 
-    async getCount(collection, column, value, excludeId = null, idColumn = null, extra: any) {
-        const query = this.table(collection).where(column, Op.eq, value);
+    async getCount(collection, column, value, excludeId = null, idColumn = null, extra: any = []) {
+        const query = this.table(collection);
+
+        if ( Array.isArray(value) ) {
+            query.where(column, Op.in, value);
+        } else {
+            query.where(column, Op.eq, value)
+        }
+
         if ( excludeId ) {
             query.where(idColumn || 'id', Op.ne, excludeId);
         }
@@ -31,7 +38,14 @@ export class DatabasePresenceVerifier implements PresenceVerifierInterface {
     }
 
     addConditions(query, conditions) {
-        for( const [key, value] of Object.entries(conditions) ) {
+        for( let condition of conditions ) {
+            let [key, value] = [null, null];
+            if ( Array.isArray(condition) ) {
+                [key, value] = condition as any;
+            } else {
+                value = condition;
+            }
+
             if ( typeof value === 'function' ) {
                 query.where(function(where) {
                     value(where);

@@ -15,7 +15,9 @@ import { Filesystem } from '@poppinss/dev-utils'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { FakeLogger as Logger } from '@adonisjs/logger/build/standalone'
 import { DatabaseContract } from '@ioc:Adonis/Lucid/Database';
-import { Database } from '@tngraphql/lucid/build/src/Database';
+import { Database } from '@adonisjs/lucid/build/src/Database';
+import { Application } from '../../../src/Foundation';
+import { BaseModel } from '@adonisjs/lucid/build/src/Orm/BaseModel';
 
 const TableBuilder = require('knex/lib/schema/tablebuilder')
 const { toArray } = require('lodash')
@@ -99,6 +101,14 @@ export async function setup() {
             name: 'nguyen',
         });
     }
+    const hasFactoryTable = await db.schema.hasTable('factory')
+    if (!hasFactoryTable) {
+        await db.schema.createTable('factory', (table) => {
+            table.increments()
+            table.string('name')
+        })
+    }
+
     await db.destroy()
 }
 
@@ -114,6 +124,7 @@ export async function cleanup(customTables?: string[]) {
         return
     }
 
+    await db.schema.dropTableIfExists('factory')
     await db.schema.dropTableIfExists('users')
 
     await db.destroy()
@@ -149,5 +160,7 @@ export function getDb() {
         },
     }
 
-    return new Database(config as any, getLogger(), getProfiler()) as DatabaseContract
+    const db = new Database(config as any, getLogger(), getProfiler()) as DatabaseContract;
+
+    return db;
 }

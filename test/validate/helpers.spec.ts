@@ -45,7 +45,7 @@ describe('Utils | Handler rulers', () => {
                                 'idColumn': 'id'
                             },
                             'model': 'users',
-                            'where': {}
+                            'where': []
                         }
                     }
                 ]
@@ -62,7 +62,7 @@ describe('Utils | Handler rulers', () => {
                             "idColumn": "id"
                         },
                         "model": "users",
-                        "where": {}
+                        "where": []
                     }
                 }
             ]

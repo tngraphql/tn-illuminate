@@ -8,6 +8,7 @@
  * file that was distributed with this source code.
  */
 import { DatabaseRule } from './DatabaseRule';
+import { isFuntion } from '../../../utils';
 
 type UniqueType = {
     model: string;
@@ -31,7 +32,7 @@ export class UniqueRule extends DatabaseRule{
                 id: null,
                 idColumn: 'id'
             },
-            where: {}
+            where: []
         };
     }
 
@@ -53,8 +54,12 @@ export class UniqueRule extends DatabaseRule{
      * @param value
      */
     public where(column: any, value?: any): this {
+        if ( typeof column !== 'string' && !isFuntion(column) ) {
+            throw new TypeError('column must be string or function callback');
+        }
+
         if ( value === undefined ) {
-            return super.where('unique', column);
+            return super.where('unique', column, null);
         }
         return super.where('unique', column, value);
     }
