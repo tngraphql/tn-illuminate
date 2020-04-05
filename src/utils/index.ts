@@ -14,8 +14,8 @@ const toString = Function.prototype.toString
  * a function.
  */
 export function ensureIsFunction (callback: Function, message: string) {
-    if (typeof (callback) !== 'function') {
-        throw new Exception(message, 500, 'E_RUNTIME_EXCEPTION')
+    if ( ! isFuntion(callback) ) {
+        throw new Exception(message, 500, 'E_RUNTIME_EXCEPTION');
     }
 }
 
@@ -23,7 +23,7 @@ export function ensureIsFunction (callback: Function, message: string) {
  * Returns a function telling if value is a class or not
  */
 export function isClass (fn: any): boolean {
-    return typeof (fn) === 'function' && /^class\s/.test(toString.call(fn))
+    return isFuntion(fn) && /^class\s/.test(toString.call(fn))
 }
 
 /**
@@ -62,6 +62,10 @@ export function isPrimtiveConstructor (value: any): boolean {
  * @param namespace
  */
 export function namespaceToString(namespace: NameSapceType) {
+    if ( ! namespace ) {
+        return String(namespace).trim();
+    }
+
     if ( typeof namespace === 'function') {
         if ( namespace.name ) {
             return `Closure ${namespace.name}`;
@@ -70,11 +74,13 @@ export function namespaceToString(namespace: NameSapceType) {
     }
 
     if ( typeof namespace === 'object' ) {
-        if ( (namespace as any).constructor ) {
-            return `object ${ (namespace as any).constructor.name }`;
-        }
-        return `object`;
+        return `object ${ (namespace as any).constructor.name }`;
     }
 
-    return String(namespace);
+    return String(namespace).trim();
+}
+
+export function uid() {
+    const uuid = require('uuid');
+    return uuid.v4();
 }

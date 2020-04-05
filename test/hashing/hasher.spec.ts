@@ -11,6 +11,7 @@
 import { Application, LoadConfiguration } from '../../src/Foundation';
 import { HashManager } from '../../src/Hashing/HashManager';
 import { HashServiceProvider } from '../../src/Hashing/HashServiceProvider';
+import has = Reflect.has;
 
 describe('Hash', () => {
     it('default driver', async () => {
@@ -59,5 +60,17 @@ describe('Hash', () => {
         app.register(new HashServiceProvider(app));
 
         expect(app.use('hash')).toBeInstanceOf(HashManager);
+    });
+
+    it('set rounds should work correctly', async () => {
+        const app = new Application();
+        new LoadConfiguration().bootstrap(app);
+
+        const hash = new HashManager(app);
+
+        const h = hash.driver();
+        h.setRounds(5);
+
+        expect(h._rounds).toBe(5);
     });
 });

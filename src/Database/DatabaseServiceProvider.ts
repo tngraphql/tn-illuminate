@@ -1,17 +1,16 @@
 import * as path from 'path';
 import { ServiceProvider } from '../Support/ServiceProvider';
-import { Database } from '@tngraphql/lucid/build/src/Database';
-import { BaseModel } from '@tngraphql/lucid/build/src/Orm/BaseModel';
 import {
+    Adapter,
+    BaseModel,
     belongsTo,
     column,
     computed,
-    hasMany,
-    hasManyThrough,
-    hasOne,
-    manyToMany
-} from '@tngraphql/lucid/build/src/Orm/Decorators';
-import { Adapter } from '@tngraphql/lucid/build/src/Orm/Adapter';
+    Database,
+    hasMany, hasManyThrough,
+    hasOne, manyToMany
+} from '../Contracts/database/aliases';
+
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>
@@ -29,16 +28,17 @@ export class DatabaseServiceProvider extends ServiceProvider {
      */
     public register(): void {
         this.app.singleton('db', () => {
-            const logger = this.app.use<any>('log');
-
-            const profiler = this.app.use<any>('profiler');
-
             this.mergeConfigFrom(path.join(__dirname, '../config/database'), 'database');
 
-            return new Database(this.app.config.get('database'), logger, profiler)
+            const db = new Database(this.app.config.get('database'), this.app.log, this.app.profiler);
+
+            BaseModel.$adapter = new Adapter(db);
+            BaseModel.$container = this.app;
+
+            return db;
         });
 
-        this.app.singleton('Tn/Lucid/Orm', () => {
+        this.app.singleton('orm', () => {
             return {
                 BaseModel,
                 column,
@@ -52,7 +52,7 @@ export class DatabaseServiceProvider extends ServiceProvider {
         });
 
         this.app.singleton('factory', () => {
-            const { DBFactory } = require('@tngraphql/lucid/build/src/Factory/DBFactory');
+            const { DBFactory } = require('../Database/Factory/DBFactory');
             return new DBFactory(this.app);
         });
     }

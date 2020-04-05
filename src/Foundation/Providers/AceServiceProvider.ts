@@ -17,14 +17,15 @@ import { TypeMakeCommand } from '../Console/TypeMakeCommand';
 import { CommandMakeCommand } from '../Console/CommandMakeCommand';
 import { KeyGenerateCommand } from '../Console/KeyGenerateCommand';
 import { RouteListCommand } from '../Console/RouteListCommand';
-import { SeedMakeCommand } from '@tngraphql/lucid/build/console/seed/SeedMakeCommand';
-import { SeedCommand } from '@tngraphql/lucid/build/console/seed/SeedCommand';
-import { ResetCommand } from '@tngraphql/lucid/build/console/migration/ResetCommand';
-import { RefreshCommand } from '@tngraphql/lucid/build/console/migration/RefreshCommand';
-import { FreshCommand } from '@tngraphql/lucid/build/console/migration/FreshCommand';
-import { StatusCommand } from '@tngraphql/lucid/build/console/migration/StatusCommand';
-import { RollbackCommand } from '@tngraphql/lucid/build/console/migration/RollbackCommand';
-import { RunCommand } from '@tngraphql/lucid/build/console/migration/RunCommand';
+
+import { SeedMakeCommand } from '../../Database/seed/SeedMakeCommand';
+import { SeedCommand } from '../../Database/seed/SeedCommand';
+import { ResetCommand } from '../../Database/migration/ResetCommand';
+import { RefreshCommand } from '../../Database/migration/RefreshCommand';
+import { FreshCommand } from '../../Database/migration/FreshCommand';
+import { StatusCommand } from '../../Database/migration/StatusCommand';
+import { RollbackCommand } from '../../Database/migration/RollbackCommand';
+import { RunCommand } from '../../Database/migration/RunCommand';
 
 @Service()
 export class AceServiceProvider extends ServiceProvider {
