@@ -9,7 +9,6 @@
  */
 import { Service, ServiceProvider } from '../..';
 import { ModelMakeCommand } from '../Console/ModelMakeCommand';
-import { CacheClearCommand } from '../Console/CacheClearCommand';
 import { MiddlewareMakeCommand } from '../Console/MiddlewareMakeCommand';
 import { MigrateMakeCommand } from '../Console/MigrateMakeCommand';
 import { ProviderMakeCommand } from '../Console/ProviderMakeCommand';
@@ -31,7 +30,6 @@ import { RunCommand } from '@tngraphql/lucid/build/console/migration/RunCommand'
 export class AceServiceProvider extends ServiceProvider {
 
     protected _commands = {
-        // 'CacheClear': 'command.cache.clear'
         'RouteList': 'command.route.list',
         'MigrateRun': 'command.migrate.run',
         'MigrateRollback': 'command.migrate.rollback',
@@ -78,12 +76,6 @@ export class AceServiceProvider extends ServiceProvider {
         this.app.singleton('command.model.make', () => {
             return ModelMakeCommand;
         });
-    }
-
-    registerCacheClearCommand() {
-        this.app.singleton('command.cache.clear', () => {
-            return CacheClearCommand;
-        })
     }
 
     registerMiddlewareMakeCommand() {
