@@ -12,6 +12,7 @@ import { Container } from './Container';
 import { isClass, isPrimtiveConstructor } from '../utils';
 import { InvalidInjectionException } from './InvalidInjectionException';
 import { OPTIONAL_DEPS_METADATA } from '../Decorators/Inject';
+import { CreateProxyReference } from './ProxyReference';
 
 /**
  * Type for what object is instances of
@@ -54,7 +55,11 @@ export class Injector {
                 throw InvalidInjectionException.invoke(injections[index], targetName, index)
             }
 
-            return this.app.make<any>(injection)
+            if ( injection.forwardRef ) {
+                return CreateProxyReference(injection.value, this.app);
+            }
+
+            return this.app.make<any>(injection);
         })
     }
 
