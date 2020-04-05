@@ -17,6 +17,7 @@ import { ModelFactory } from '../../src/Database/Factory/ModelFactory';
 import { cleanup, getDb, setup } from '../validate/helpers';
 import { DatabaseFactory } from '../../src/Database/Factory/DatabaseFactory';
 import { Adapter, BaseModel, column } from '../../src/Contracts/database/aliases';
+import { chance } from '../../src/Database/Factory/chance';
 
 let db: ReturnType<typeof getDb>
 let app
@@ -326,5 +327,17 @@ describe('Factory', () => {
 
             expect(users).toHaveLength(0);
         })
+    });
+
+    describe('chance', () => {
+        it('username', async () => {
+            expect(chance.username(10)).toHaveLength(10);
+            expect(chance.username(10)).not.toBe(chance.username(10));
+        });
+
+        it('password', async () => {
+            expect(chance.password(10)).toHaveLength(10);
+            expect(chance.password(10)).not.toBe(chance.password(10));
+        });
     });
 });

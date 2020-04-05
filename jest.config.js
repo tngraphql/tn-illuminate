@@ -18,7 +18,7 @@ module.exports = {
       "**/*.spec.ts",
       // "**/console/**/*.spec.ts",
       // "**/database/**/*.spec.ts",
-      // "**/validate/**/*.spec.ts",
+      // "**/validate/*.spec.ts",
 
   ],
   // "setupTestFrameworkScriptFile": "<rootDir>/setupTests.js"

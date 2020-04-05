@@ -1,11 +1,11 @@
 'use strict'
 import { DatabaseFactory } from './DatabaseFactory'
 import { ModelFactory } from './ModelFactory'
-import { ContainerContract } from './ContainerContract'
-import { Container } from './Container'
 import { InvalidArgumentException } from './InvalidArgumentException'
 import { Chance } from 'chance'
 import { BlueprintResolutionException } from './BlueprintResolutionException'
+import { Application } from '../../Foundation';
+import { ApplicationContract } from '../../Contracts/ApplicationContract';
 
 export interface Blueprint<T = any> {
   name: string;
@@ -23,9 +23,9 @@ export interface Blueprint<T = any> {
 export class DBFactory {
   protected _blueprints: Blueprint[] = []
 
-  protected app: ContainerContract = new Container()
+  protected app: ApplicationContract = new Application();
 
-  constructor (app?: ContainerContract) {
+  constructor (app?: ApplicationContract) {
     if (app) {
       this.app = app
     }
