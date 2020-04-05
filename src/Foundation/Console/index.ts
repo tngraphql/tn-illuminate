@@ -10,7 +10,6 @@
 
 export * from './ConsoleKernel';
 export * from './AceApplication';
-export * from './CacheClearCommand';
 export * from './CommandMakeCommand';
 export * from './GeneratorCommand';
 export * from './KeyGenerateCommand';

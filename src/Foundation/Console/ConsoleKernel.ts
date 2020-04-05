@@ -3,7 +3,6 @@ import { BaseCommand, } from '@tngraphql/console';
 import _ = require('lodash');
 import { AceApplication as Ace } from './AceApplication';
 import { Application } from '../Application';
-import { HandleExceptions } from '../Bootstrap/HandleExceptions';
 import { LoadConfiguration } from '../Bootstrap/LoadConfiguration';
 import { LoadEnvironmentVariables } from '../Bootstrap/LoadEnvironmentVariables';
 import { RegisterProviders } from '../Bootstrap/RegisterProviders';
@@ -30,7 +29,6 @@ export class ConsoleKernel {
     protected bootstrappers: Function[] = [
         LoadEnvironmentVariables,
         LoadConfiguration,
-        HandleExceptions,
         RegisterFacades,
         RegisterProviders,
         BootProviders,
@@ -45,7 +43,7 @@ export class ConsoleKernel {
             await this.bootstrap();
             await this.getAce().handle(process.argv.splice(2));
         } catch (e) {
-            this.reportException(e);
+            console.log(e);
         }
     }
 
@@ -71,15 +69,5 @@ export class ConsoleKernel {
 
     public setAce(ace) {
         this.ace = ace;
-    }
-
-    /**
-     * Report the exception to the exception handler.
-     *
-     * @param e
-     */
-    protected reportException(e)
-    {
-        this.app['ExceptionHandler'].report(e);
     }
 }

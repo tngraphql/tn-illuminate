@@ -536,10 +536,10 @@
     macroable "^4.0.2"
     snake-case "^3.0.3"
 
-"@tngraphql/lucid@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@tngraphql/lucid/-/lucid-1.0.1.tgz#a8346bfb74dcc7746af11afc6135692433c39ade"
-  integrity sha512-akioctWr9NjDbjkVvkw2aOZzOs5jctA31qALATEx39yGCKiS98NpTQQXhBmlEtjk5egjGRxBb0ASgvEAb1i3zw==
+"@tngraphql/lucid@^1.0.2-alpha":
+  version "1.0.2-alpha"
+  resolved "https://registry.yarnpkg.com/@tngraphql/lucid/-/lucid-1.0.2-alpha.tgz#28d107e209f8b546ea0f1a3a6a6e0ed3fe87f516"
+  integrity sha512-Yx0LUOXc/0p1AoHfF3jRCeusc+jaqUs2rKMT4R54Wre1OP0797CkiAZwUWAmn2JzXD1JTpOoaw1M7ZGZMTDOiQ==
   dependencies:
     "@poppinss/hooks" "^1.0.3"
     "@poppinss/utils" "^2.1.2"

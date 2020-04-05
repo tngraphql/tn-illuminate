@@ -55,7 +55,7 @@
   "devDependencies": {
     "@tngraphql/console": "^1.0.0",
     "@tngraphql/graphql": "^1.0.0",
-    "@tngraphql/lucid": "^1.0.0",
+    "@tngraphql/lucid": "^1.0.2-alpha",
     "@tngraphql/route": "^1.0.0",
     "@types/express": "^4.17.2",
     "@types/jest": "^25.1.3",
