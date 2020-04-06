@@ -1,6 +1,6 @@
 {
   "name": "@tngraphql/illuminate",
-  "version": "1.1.26-alpha",
+  "version": "1.1.27-alpha",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -24,7 +24,8 @@
     "build": "npm run clean && tsc -b && npm run copy:files",
     "compile": "yarn build",
     "copy:files": "copyfiles -u 1 \"src/**/*.stub\" dist",
-    "pub": "yarn publish"
+    "pub": "yarn publish",
+    "alpha": "npm run build && yarn publish --tag=alpha"
   },
   "author": "Nguyenpl117,TNGraphQL",
   "license": "MIT",
