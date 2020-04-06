@@ -55,7 +55,7 @@ export class SeedCommand extends BaseCommand {
       const allFiles: Function[] = this._getSeedFiles(files) as Function[]
 
       if (! _.size(allFiles)) {
-        return this.application.environment !== 'test' ? this.logger.info('Nothing to seed') : 'Nothing to seed'
+        return this.logger.info('Nothing to seed');
       }
 
       for(const file of _.keys(allFiles)) {

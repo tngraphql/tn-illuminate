@@ -10,9 +10,8 @@ import { normalize } from 'path';
 import { InvalidArgumentException } from './InvalidArgumentException';
 import { LogicException } from './LogicException';
 import { ensureIsFunction, isClass, isEsm, isObject, namespaceToString } from '../utils';
-import { Injector } from './Injector';
+import { Injector, Type } from './Injector';
 import { Resovler } from './Resovler';
-import { Macroable } from 'macroable/build';
 import { IocProxyClass, IoCProxyObject } from './IoCProxy';
 import _ = require('lodash');
 
@@ -47,14 +46,14 @@ export type AutoloadCacheItem = {
 
 const handler = {
     get<T extends Container>(target: T, p: string | number | symbol, receiver: any): any {
-        if ( ! Reflect.has(target, p)) {
+        if ( ! Reflect.has(target, p) ) {
             if ( ['asymmetricMatch', Symbol.iterator, Symbol.toStringTag].includes(p as any) ) {
                 return;
             }
 
             return target.make(p as string);
         }
-        return target[p];
+        return Reflect.get(target, p, receiver);
     },
     set(target: any, p: string | number | symbol, value: any, receiver: any): boolean {
         if ( ! Reflect.has(target, p) ) {
@@ -103,7 +102,14 @@ export class Container {
      */
     private autoloadsCache: Map<string, AutoloadCacheItem> = new Map<string, AutoloadCacheItem>();
 
-    private injector = new Injector(this);
+    private injector = {
+        injectMethodDependencies: <T = any>(target, method, args): T =>{
+            return (new Injector(this)).injectMethodDependencies(target, method, args);
+        },
+        injectDependencies: <T = any>(target: Type<any> | any, binding = true, args: any = []): T => {
+            return (new Injector(this)).injectDependencies<T>(target, binding, args);
+        }
+    };
 
     private _fakes: Map<NameSapceType, any> = new Map<NameSapceType, any>();
 

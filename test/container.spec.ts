@@ -1191,35 +1191,49 @@ describe('Container', () => {
     });
 
     describe('Container | instance', () => {
-        it('test', async () => {
+        it('should create a bind when using set', async () => {
             Container.instance = undefined;
             const ioc = Container.getInstance<Container | any>();
+            ioc.foo = 'nguyen';
 
-            // ioc.singleton('test', () => 'fasfas');
-            ioc.instance('test', 'askfms');
-            class Bar {
-                get bajsd() {
-                    return 1;
-                }
-                nguyen() {};
-            }
+            expect(ioc.use('foo')).toBe('nguyen');
+        });
 
-            const bar: any = new Bar();
-            console.log(bar.hasOwnProperty('bajsd'), Reflect.has(bar, Symbol.toStringTag));
-            ioc['test'];
-            ioc['test'];
-            ioc['test'];
-            ioc['test'];
-            ioc.nguyen = 'nguyen';
-            ioc._instances = new Map<any, any>();
-            console.log('_instances' in ioc)
-            // console.log(ioc.use('nguyen'));
-            // ioc.instance('test', '1232');
-            // ioc.instance('test', '12324');
-            // ioc.test = 'askgmskm';
-            // console.log(ioc['test']);
-            // console.log(ioc['test']);
-            // console.log(ioc['test']);
+        it('when set prototype should work properly', async () => {
+            Container.instance = undefined;
+            const ioc = Container.getInstance<Container | any>();
+            Object.setPrototypeOf(ioc, {
+                foo: 'nguyen'
+            });
+            expect(ioc.foo).toBe('nguyen');
+            expect(() => ioc.use('foo')).toThrow();
+        });
+
+        it('when define property should work properly', async () => {
+            Container.instance = undefined;
+            const ioc = Container.getInstance<Container | any>();
+            const desc = { configurable: true, enumerable: true, value: 10 };
+            Object.defineProperty(ioc, 'foo', desc);
+            expect(ioc.foo).toBe(10);
+            expect(() => ioc.use('foo')).toThrow();
+        });
+
+        it('should get value a binding when a register binding', async () => {
+            Container.instance = undefined;
+            const ioc = Container.getInstance<Container | any>();
+            ioc.bind('foo', () => 'foo');
+
+            expect(ioc.foo).toBe('foo');
+        });
+
+        it('should get value a instance when a register instance', async () => {
+            Container.instance = undefined;
+            const ioc = Container.getInstance<Container | any>();
+            ioc.instance('foo', 'foo');
+
+            expect(ioc.foo).toBe('foo');
+            expect(ioc.use('foo')).toBe('foo');
+            expect(ioc.make('foo')).toBe('foo');
         });
     });
 });

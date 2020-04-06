@@ -79,8 +79,3 @@ export function namespaceToString(namespace: NameSapceType) {
 
     return String(namespace).trim();
 }
-
-export function uid() {
-    const uuid = require('uuid');
-    return uuid.v4();
-}

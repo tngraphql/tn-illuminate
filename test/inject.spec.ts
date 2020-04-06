@@ -13,8 +13,6 @@ import { Application } from '../src/Foundation';
 import { Injector } from '../src/Container';
 import { Service } from '../src';
 import { Inject } from '../src/Decorators/Inject';
-import { CircularRef1 } from './circular-refs/construct/good/CircularRef1';
-import { CircularRef2 } from './circular-refs/construct/good/CircularRef2';
 
 describe('Inject', () => {
     describe('simple', () => {
@@ -247,8 +245,29 @@ describe('Inject', () => {
     });
 
     describe('Circular references', () => {
+        it('should resolve circular type dependencies when using forwardRef', async () => {
+            const { CircularRef1 } = require('./circular-refs/construct/good/CircularRef1');
+            const { CircularRef2 } = require('./circular-refs/construct/good/CircularRef2');
 
-        it('test', async () => {
+            const app = new Application();
+            const ref1 = app.make(CircularRef1);
+            const ref2 = ref1.ref2;
+
+            expect(ref1).toBeInstanceOf(CircularRef1);
+            expect(ref2).toBeInstanceOf(CircularRef2);
+        });
+
+        it('should resolve circular type dependencies when type functions are used', async () => {
+            const { CircularRef1 } = require('./circular-refs/properties/good/CircularRef1');
+            const { CircularRef2 } = require('./circular-refs/properties/good/CircularRef2');
+
+            class A {
+                constructor() {
+                    console.log('test');
+                }
+
+            }
+
             const app = new Application();
             const ref1 = app.make(CircularRef1);
             const ref2 = ref1.ref2;
@@ -257,5 +276,4 @@ describe('Inject', () => {
             expect(ref2).toBeInstanceOf(CircularRef2);
         });
     });
-
 });

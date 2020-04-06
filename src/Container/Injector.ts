@@ -8,10 +8,9 @@
  * file that was distributed with this source code.
  */
 import 'reflect-metadata';
-import { Container } from './Container';
+import { Container, NameSapceType } from './Container';
 import { isClass, isPrimtiveConstructor } from '../utils';
 import { InvalidInjectionException } from './InvalidInjectionException';
-import { OPTIONAL_DEPS_METADATA } from '../Decorators/Inject';
 import { CreateProxyReference } from './ProxyReference';
 
 /**
@@ -22,20 +21,62 @@ export interface Type<T> {
 }
 
 export class Injector {
+    private services: Map<any, any> = new Map<unknown, unknown>();
+
     constructor(public app: Container) {
+    }
+
+    /**
+     * Resolves instances by injecting required services
+     * @param {Type<any>} target
+     * @returns {T}
+     */
+    public injectDependencies<T = any>(target: Type<any> | any, binding = true, args: any = []): T {
+        if ( ! isClass(target) || target.makePlain === true ) {
+            return target
+        }
+
+        if ( this.services.has(target) ) {
+            return this.services.get(target);
+        }
+
+        // tokens are required dependencies, while injections are resolved tokens from the Injector
+        const tokens = Reflect.getMetadata('design:paramtypes', target) || [];
+        const params = this.initializeParams(target, tokens);
+        const injections = this.resolveInjections(target.name, params, args);
+
+        if ( this.app.hasBinding(target) && binding ) {
+            return this.app.use(target);
+        }
+
+        const value = new target(...injections);
+
+        this.services.set(target, value);
+
+        this.applyPropertyHandlers(target, value);
+        return value;
+    }
+
+    public injectMethodDependencies(target, method, runtimeValues = []) {
+        const constructor = target.constructor;
+
+        const tokens = Reflect.getMetadata('design:paramtypes', target, method) || [];
+        const params = this.initializeParams(target, tokens);
+
+        return target[method](...this.resolveInjections(`${ constructor.name }.${ method }`, params, runtimeValues));
     }
 
     /**
      * Resolves the injections to be injected to a method or the
      * class constructor
      */
-    private resolveInjections (targetName: string, injections: any[], runtimeValues: any[]): any[] {
+    private resolveInjections(targetName: string, injections: any[], runtimeValues: any[]): any[] {
         /**
          * If the runtime values length is greater or same as the length
          * of injections, then we treat them as the source of truth
          * and inject them as it is
          */
-        if (runtimeValues && runtimeValues.length >= injections.length) {
+        if ( runtimeValues && runtimeValues.length >= injections.length ) {
             return runtimeValues
         }
 
@@ -44,14 +85,14 @@ export class Injector {
          * for a given index, otherwise fallback to `container.make`.
          */
         return injections.map((injection: any, index: number) => {
-            if (runtimeValues && runtimeValues[index] !== undefined) {
+            if ( runtimeValues && runtimeValues[index] !== undefined ) {
                 return runtimeValues[index]
             }
 
             /**
              * Disallow object and primitive constructors
              */
-            if (isPrimtiveConstructor(injection)) {
+            if ( isPrimtiveConstructor(injection) ) {
                 throw InvalidInjectionException.invoke(injections[index], targetName, index)
             }
 
@@ -59,48 +100,14 @@ export class Injector {
                 return CreateProxyReference(injection.value, this.app);
             }
 
-            return this.app.make<any>(injection);
+            return this.make<any>(injection);
         })
-    }
-
-    /**
-     * Resolves instances by injecting required services
-     * @param {Type<any>} target
-     * @returns {T}
-     */
-    injectDependencies<T>(target: Type<any> | any, binding = true, args: any = []): T {
-        if (!isClass(target) || target.makePlain === true) {
-            return target
-        }
-
-        // tokens are required dependencies, while injections are resolved tokens from the Injector
-        const tokens = Reflect.getMetadata('design:paramtypes', target) || [];
-        const params = this.initializeParams(target, tokens);
-        const injections = this.resolveInjections(target.name, params, args);
-
-        if ( this.app.hasBinding(target) && binding) {
-            return this.app.use(target);
-        }
-
-        const value = new target(...injections);
-
-        this.applyPropertyHandlers(target, value);
-        return value;
-    }
-
-    injectMethodDependencies(target, method, runtimeValues = []) {
-        const constructor = target.constructor;
-
-        const tokens = Reflect.getMetadata('design:paramtypes', target, method) || [];
-        const params = this.initializeParams(target, tokens);
-
-        return target[method](...this.resolveInjections(`${constructor.name}.${method}`, params, runtimeValues));
     }
 
     private initializeParams(target: Function, paramTypes: any[]): any[] {
         return paramTypes.map((paramType, index) => {
             const paramHandler = Injector.handlers.find(handler => {
-                if ( typeof target === 'object' && typeof handler.object === 'object') {
+                if ( typeof target === 'object' && typeof handler.object === 'object' ) {
                     return handler.object === (target as any).constructor.prototype && handler.index === index;
                 }
                 return handler.object === target && handler.index === index;
@@ -123,8 +130,15 @@ export class Injector {
             if ( handler.object.constructor !== target && ! (target.prototype instanceof handler.object.constructor) )
                 return;
 
-            instance[handler.propertyName] = this.app.make(handler.value());
+            instance[handler.propertyName] = this.make(handler.value());
         });
+    }
+
+    private make<T = any>(concrete: NameSapceType): T {
+        if ( typeof (concrete) !== 'string' && ! this.app.lookup(concrete) ) {
+            return this.injectDependencies(concrete);
+        }
+        return this.app.make(concrete);
     }
 
     /**

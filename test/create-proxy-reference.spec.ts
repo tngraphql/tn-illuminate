@@ -12,7 +12,7 @@ import { Application } from '../src/Foundation';
 import { CreateProxyReference } from '../src/Container/ProxyReference';
 
 describe('create-proxy-reference', () => {
-    it('asfs', async () => {
+    it('should work properly', async () => {
         const app = new Application();
         class A {
 
@@ -26,6 +26,7 @@ describe('create-proxy-reference', () => {
         });
         ref2.test = 'foo';
 
+        expect(ref2).toBeInstanceOf(A);
         expect(ref2.a).toBe(10);
         expect(ref2.name).toBe('foo');
         expect(ref2.test).toBe('foo');
@@ -34,7 +35,7 @@ describe('create-proxy-reference', () => {
         expect(ref2.test).toBeUndefined();
     });
 
-    it('getOwnPropertyDescriptor', async () => {
+    it('getOwnPropertyDescriptor should work properly', async () => {
         const app = new Application();
         class A {
 

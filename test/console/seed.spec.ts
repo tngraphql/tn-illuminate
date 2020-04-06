@@ -19,18 +19,29 @@ let db: ReturnType<typeof getDb>
 const fs = new Filesystem(join(__dirname, 'app'))
 
 describe('Seed', () => {
-  beforeEach(async () => {
-    await setup()
-    db = getDb()
-  })
-  afterEach(async () => {
-    await fs.cleanup()
-    await cleanup()
-    await db.manager.closeAll()
-  })
+    let app = new Application(fs.basePath);
+    let kernel = new Kernel(app);
 
-  test('Seed database using seed files', async () => {
-    await fs.add('database/seeds/UserSeeder.ts', `
+    beforeEach(async () => {
+        await setup()
+        db = getDb()
+        app.inProduction = false
+        app.environment = 'test'
+        app.singleton('db', () => db)
+        app.singleton('factory', () => {
+            const { DBFactory } = require('../../src/Database/Factory/DBFactory')
+            return new DBFactory(app)
+        })
+        Facade.setFacadeApplication(app)
+    })
+    afterEach(async () => {
+        await fs.cleanup()
+        await cleanup()
+        await db.manager.closeAll()
+    })
+
+    test('Seed database using seed files', async () => {
+        await fs.add('database/seeds/UserSeeder.ts', `
 import { DBFactory } from '../../../../../src/Database/Factory/DBFactory';
 import { Facade } from '../../../../../src/Support/Facade';
 
@@ -51,31 +62,27 @@ export class UserSeeder {
 }
     `)
 
-    const app: any = new Application(fs.basePath)
-    app.inProduction = false
-    app.environment = 'test'
-    const kernel = new Kernel(app)
+        const seed = new SeedCommand(app, kernel)
+        await seed.handle()
+        db = getDb()
 
-    app.singleton('db', () => db)
+        const seeded = await db.connection().from('factory').select('*')
 
-    app.singleton('factory', () => {
-      const { DBFactory } = require('../../src/Database/Factory/DBFactory')
-      return new DBFactory(app)
-    })
+        expect(seeded).toHaveLength(1);
+    });
 
-    Facade.setFacadeApplication(app)
+    it('should work properly when canot find files', async () => {
+        await fs.add('database/seeds/index.txt', '');
 
-    const seed = new SeedCommand(app, kernel)
-    await seed.handle()
-    db = getDb()
+        const seed = new SeedCommand(app, kernel)
 
-    const seeded = await db.connection().from('factory').select('*')
+        await seed.handle();
 
-    expect(seeded).toHaveLength(1);
-  })
+        expect(seed.logger.logs[0]).toBe('underline(blue(info)) Nothing to seed');
+    });
 
-  test('Seed database using Factory files', async () => {
-    await fs.add('database/factories/UserFactory.ts',`
+    test('Seed database using Factory files', async () => {
+        await fs.add('database/factories/UserFactory.ts', `
 import { DBFactory } from '../../../../../src/Database/Factory/DBFactory';
 import { Facade } from '../../../../../src/Support/Facade';
 
@@ -87,7 +94,7 @@ Factory.blueprint('factory', () => {
   }
 })
     `)
-    await fs.add('database/seeds/UserSeeder.ts', `
+        await fs.add('database/seeds/UserSeeder.ts', `
 import { DBFactory } from '../../../../../src/Database/Factory/DBFactory';
 import { Facade } from '../../../../../src/Support/Facade';
 
@@ -102,26 +109,12 @@ export class UserSeeder {
 }
     `)
 
-    const app: any = new Application(fs.basePath)
-    app.inProduction = false
-    app.environment = 'test'
-    const kernel = new Kernel(app)
+        const seed = new SeedCommand(app, kernel)
+        await seed.handle()
+        db = getDb()
 
-    app.singleton('db', () => db)
+        const seeded = await db.connection().from('factory').select('*')
 
-    app.singleton('factory', () => {
-      const { DBFactory } = require('../../src/Database/Factory/DBFactory')
-      return new DBFactory(app)
+        expect(seeded).toHaveLength(1);
     })
-
-    Facade.setFacadeApplication(app)
-
-    const seed = new SeedCommand(app, kernel)
-    await seed.handle()
-    db = getDb()
-
-    const seeded = await db.connection().from('factory').select('*')
-
-    expect(seeded).toHaveLength(1);
-  })
 })
