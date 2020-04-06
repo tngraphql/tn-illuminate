@@ -7,15 +7,16 @@
 import { Application } from '../Application';
 import { Repository } from '../../config/Repository';
 import { requireAll } from '@poppinss/utils/build';
+import * as fs from 'fs';
 
 export class LoadConfiguration {
     public bootstrap(app: Application) {
-        try {
-            const config = new Repository(requireAll(app.configPath()));
+        if ( ! fs.existsSync(app.configPath()) ) {
+            const config = new Repository({});
 
             app.instance('config', config);
-        } catch (e) {
-            const config = new Repository({});
+        } else {
+            const config = new Repository(requireAll(app.configPath()));
 
             app.instance('config', config);
         }
