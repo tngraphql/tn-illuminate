@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { isFuntion, uid } from '../../../utils';
+import { isFuntion } from '../../../utils';
 
 type OneOrMany<T> = T | T[];
 

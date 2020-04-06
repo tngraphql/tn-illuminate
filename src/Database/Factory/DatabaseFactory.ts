@@ -1,7 +1,7 @@
 'use strict'
 import { chance } from './chance'
 import _ = require('lodash')
-import { ContainerContract } from './ContainerContract'
+import { ApplicationContract } from '../../Contracts/ApplicationContract';
 
 /**
  * Model factory to seed database using Lucid
@@ -14,7 +14,7 @@ export class DatabaseFactory {
   protected _returningColumn = null
   protected _connection = null
 
-  constructor (protected app: ContainerContract, public tableName: string,
+  constructor (protected app: ApplicationContract, public tableName: string,
     public dataCallback: (faker?: any, index?: number, data?: any) => any| Promise<any>) {
   }
 
