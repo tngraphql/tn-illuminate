@@ -33,7 +33,6 @@ export class DatabaseServiceProvider extends ServiceProvider {
             const db = new Database(this.app.config.get('database'), this.app.log, this.app.profiler);
 
             BaseModel.$adapter = new Adapter(db);
-            BaseModel.$container = this.app;
 
             return db;
         });

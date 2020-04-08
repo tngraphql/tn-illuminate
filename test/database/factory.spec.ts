@@ -84,7 +84,6 @@ describe('Factory', () => {
             app = new Application()
             app.singleton('db', () => db)
             BaseModel.$adapter = new Adapter(db)
-            BaseModel.$container = app;
 
             class User extends BaseModel {
                 public static table = 'factory'
@@ -200,7 +199,6 @@ describe('Factory', () => {
             app.singleton('db', () => db)
 
             BaseModel.$adapter = new Adapter(db)
-            BaseModel.$container = app;
 
             class User extends BaseModel {
                 public static table = 'factory'
