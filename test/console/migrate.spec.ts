@@ -23,11 +23,12 @@ import { RefreshCommand } from '../../src/Database/migration/RefreshCommand';
 import { StatusCommand } from '../../src/Database/migration/StatusCommand';
 
 let db: ReturnType<typeof getDb>
-const fs = new Filesystem(join(__dirname, 'app'))
+let fs = new Filesystem(join(__dirname, 'app'))
 describe('Migrate', () => {
 
     describe('Migrate | Fresh', () => {
         beforeEach(async () => {
+            fs = new Filesystem(join(__dirname, `app${Math.ceil(Number((Math.random()+'').replace('0.','')))}`))
             await setup()
             db = getDb()
         })
@@ -35,11 +36,11 @@ describe('Migrate', () => {
             await fs.cleanup()
             await db.manager.closeAll()
             await cleanup()
-            await cleanup(['adonis_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
+            await cleanup(['tngraphql_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
         })
         test('Reset and re-run all migrations', async () => {
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 
 module.exports = class User extends Schema {
   public async up () {
@@ -64,7 +65,7 @@ module.exports = class User extends Schema {
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 module.exports = class User2 extends Schema {
   public async up () {
     this.schema.createTable('schema_users2', (table) => {
@@ -86,7 +87,7 @@ module.exports = class User2 extends Schema {
 
             db = getDb()
 
-            const migrated = await db.connection().from('adonis_schema').select('*');
+            const migrated = await db.connection().from('tngraphql_schema').select('*');
 
             expect(migrated[0].batch).toBe(1);
             expect(migrated[1].batch).toBe(1);
@@ -103,12 +104,12 @@ module.exports = class User2 extends Schema {
             await fs.cleanup()
             await db.manager.closeAll(true)
             await cleanup()
-            await cleanup(['adonis_schema', 'schema_users', 'schema_accounts'])
+            await cleanup(['tngraphql_schema', 'schema_users', 'schema_accounts'])
         })
 
         test('run migrations from default directory', async () => {
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 
 module.exports = class User extends Schema {
   public async up () {
@@ -125,7 +126,7 @@ module.exports = class User extends Schema {
             await migrate.handle()
             db = getDb()
 
-            const migrated = await db.connection().from('adonis_schema').select('*')
+            const migrated = await db.connection().from('tngraphql_schema').select('*')
             const hasUsersTable = await db.connection().schema.hasTable('schema_users')
 
             expect(migrated).toHaveLength(1);
@@ -143,13 +144,13 @@ module.exports = class User extends Schema {
             await migrate.handle()
 
             db = getDb()
-            const migrated = await db.connection().from('adonis_schema').select('*')
+            const migrated = await db.connection().from('tngraphql_schema').select('*')
             expect(migrated).toHaveLength(0);
         })
 
         test('print sql queries in dryRun', async () => {
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 module.exports = class User extends Schema {
 public async up () {
   this.schema.createTable('schema_users', (table) => {
@@ -166,7 +167,7 @@ public async up () {
             await migrate.handle()
 
             db = getDb()
-            const migrated = await db.connection().from('adonis_schema').select('*')
+            const migrated = await db.connection().from('tngraphql_schema').select('*')
             expect(migrated).toHaveLength(0);
         })
 
@@ -174,7 +175,7 @@ public async up () {
             expect.assertions(1);
 
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 module.exports = class User extends Schema {
 public async up () {
   this.schema.createTable('schema_users', (table) => {
@@ -200,7 +201,7 @@ public async up () {
             expect.assertions(2);
 
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 
 module.exports = class User extends Schema {
   public async up () {
@@ -224,7 +225,7 @@ Factory.blueprint('factory', () => {
 
 export class UserSeeder {
   public async run () {
-    Factory.get('factory').create({
+    await Factory.get('factory').create({
       name: 'nguyenpl117',
     })
   }
@@ -252,7 +253,7 @@ export class UserSeeder {
                 prompt.accept();
             })
             migrate.seed = true
-            // migrate.keepAlive = true;
+            migrate.keepAlive = true;
             await migrate.handle()
             db = getDb()
 
@@ -264,7 +265,7 @@ export class UserSeeder {
             expect.assertions(2);
 
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 module.exports = class User extends Schema {
 public async up () {
   this.schema.createTable('schema_users', (table) => {
@@ -291,7 +292,7 @@ public async up () {
 
         test('do not prompt during migration when force flag is defined', async () => {
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 module.exports = class User extends Schema {
 public async up () {
   this.schema.createTable('schema_users', (table) => {
@@ -317,7 +318,7 @@ public async up () {
             expect.assertions(1);
 
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 module.exports = class User extends Schema {
  public async down () {
  }
@@ -338,7 +339,7 @@ module.exports = class User extends Schema {
 
         test('do not prompt during rollback in production when force flag is defined', async () => {
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 module.exports = class User extends Schema {
   public async down () {
   }
@@ -367,11 +368,11 @@ module.exports = class User extends Schema {
             await fs.cleanup()
             await db.manager.closeAll()
             await cleanup()
-            await cleanup(['adonis_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
+            await cleanup(['tngraphql_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
         })
         test('Reset and re-run all migrations', async () => {
             await fs.add('database/migrations/users.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 
 module.exports = class User extends Schema {
   public async up () {
@@ -395,7 +396,7 @@ module.exports = class User extends Schema {
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
-import { Schema } from '@adonisjs/lucid/build/src/Schema';
+import { Schema } from '@tngraphql/lucid/build/src/Schema';
 
 module.exports = class User2 extends Schema {
   public async up () {
@@ -417,7 +418,7 @@ module.exports = class User2 extends Schema {
             await refresh.handle()
             db = getDb()
 
-            const migrated = await db.connection().from('adonis_schema').select('*')
+            const migrated = await db.connection().from('tngraphql_schema').select('*')
             await db.manager.closeAll()
             expect(migrated[0].batch).toBe(1);
             expect(migrated[1].batch).toBe(1);
@@ -432,11 +433,11 @@ module.exports = class User2 extends Schema {
         afterEach(async () => {
             await fs.cleanup()
             await cleanup()
-            await cleanup(['adonis_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
+            await cleanup(['tngraphql_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
         })
         test('Rollback all database migrations', async () => {
             await fs.add('database/migrations/users.ts', `
-      import { Schema } from '@adonisjs/lucid/build/src/Schema';
+      import { Schema } from '@tngraphql/lucid/build/src/Schema';
       module.exports = class User extends Schema {
         public async up () {
           this.schema.createTable('schema_users', (table) => {
@@ -459,7 +460,7 @@ module.exports = class User2 extends Schema {
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
-      import { Schema } from '@adonisjs/lucid/build/src/Schema';
+      import { Schema } from '@tngraphql/lucid/build/src/Schema';
       module.exports = class User2 extends Schema {
         public async up () {
           this.schema.createTable('schema_users2', (table) => {
@@ -482,7 +483,7 @@ module.exports = class User2 extends Schema {
             await reset.handle()
 
             db = getDb()
-            const migrated = await db.connection().from('adonis_schema').select('*')
+            const migrated = await db.connection().from('tngraphql_schema').select('*')
             await db.manager.closeAll()
             expect(migrated).toHaveLength(0);
         })
@@ -497,12 +498,12 @@ module.exports = class User2 extends Schema {
             await fs.cleanup()
             await db.manager.closeAll()
             await cleanup()
-            await cleanup(['adonis_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
+            await cleanup(['tngraphql_schema', 'schema_users', 'schema_users2', 'schema_accounts'])
         })
 
         test('Rollback all database migrations', async () => {
             await fs.add('database/migrations/users.ts', `
-      import { Schema } from '@adonisjs/lucid/build/src/Schema';
+      import { Schema } from '@tngraphql/lucid/build/src/Schema';
       module.exports = class User extends Schema {
         public async up () {
           this.schema.createTable('schema_users', (table) => {
@@ -525,7 +526,7 @@ module.exports = class User2 extends Schema {
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
-      import { Schema } from '@adonisjs/lucid/build/src/Schema';
+      import { Schema } from '@tngraphql/lucid/build/src/Schema';
       module.exports = class User2 extends Schema {
         public async up () {
           this.schema.createTable('schema_users2', (table) => {
@@ -547,7 +548,7 @@ module.exports = class User2 extends Schema {
 
             await reset.handle()
 
-            const migrated = await db.connection().from('adonis_schema').select('*')
+            const migrated = await db.connection().from('tngraphql_schema').select('*')
             await db.manager.closeAll()
             expect(migrated).toHaveLength(1);
         })
@@ -563,11 +564,11 @@ module.exports = class User2 extends Schema {
             await fs.cleanup()
             await db.manager.closeAll()
             await cleanup()
-            await cleanup(['adonis_schema', 'schema_users', 'schema_accounts'])
+            await cleanup(['tngraphql_schema', 'schema_users', 'schema_accounts'])
         })
         test('list migrations current status', async () => {
             await fs.add('database/migrations/users.ts', `
-      import { Schema } from '@adonisjs/lucid/build/src/Schema';
+      import { Schema } from '@tngraphql/lucid/build/src/Schema';
       module.exports = class User extends Schema {
         public async up () {
           this.schema.createTable('schema_users', (table) => {
@@ -586,7 +587,7 @@ module.exports = class User2 extends Schema {
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
-      import { Schema } from '@adonisjs/lucid/build/src/Schema';
+      import { Schema } from '@tngraphql/lucid/build/src/Schema';
       module.exports = class User2 extends Schema {
 
       }

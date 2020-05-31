@@ -87,8 +87,8 @@ export class RunCommand extends MigrationsBaseCommand {
     /**
      * New up migrator
      */
-    const { Migrator } = await import('@adonisjs/lucid/build/src/Migrator');
-    const migrator = new Migrator(this.db, this.application, {
+    const { Migrator } = await import('@tngraphql/lucid/build/src/Migrator/Migrator');
+    const migrator = new Migrator(this.db, this.application as any, {
       direction: 'up',
       connectionName: this.connection,
       dryRun: this.dryRun,

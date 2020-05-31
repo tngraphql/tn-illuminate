@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { QueryClientContract } from '@ioc:Adonis/Lucid/Database';
+import {QueryClientContract} from "@tngraphql/lucid/build/src/Contracts/Database/QueryClientContract";
 
 export interface ConnectionResolverInterface {
     primaryConnectionName: string;

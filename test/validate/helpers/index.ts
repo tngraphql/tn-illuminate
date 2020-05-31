@@ -14,10 +14,9 @@ import { join } from 'path'
 import { Filesystem } from '@poppinss/dev-utils'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { FakeLogger as Logger } from '@adonisjs/logger/build/standalone'
-import { DatabaseContract } from '@ioc:Adonis/Lucid/Database';
-import { Database } from '@adonisjs/lucid/build/src/Database';
-import { Application } from '../../../src/Foundation';
-import { BaseModel } from '@adonisjs/lucid/build/src/Orm/BaseModel';
+import { Database } from '@tngraphql/lucid/build/src/Database/Database';
+import { DatabaseContract } from '@tngraphql/lucid/build/src/Contracts/Database/DatabaseContract'
+import {getEmitter} from "@tngraphql/lucid/build/tests/helpers";
 
 const TableBuilder = require('knex/lib/schema/tablebuilder')
 const { toArray } = require('lodash')
@@ -41,12 +40,12 @@ dotenv.config()
  * Returns config based upon DB set in environment variables
  */
 export function getConfig() {
-    switch (process.env.DB) {
+    switch (process.env.DB_CONNECTION) {
     case 'sqlite':
         return {
             client: 'sqlite',
             connection: {
-                filename: join(fs.basePath, 'db.sqlite'),
+                filename: join(process.cwd(), 'db.sqlite'),
             },
             useNullAsDefault: true,
             debug: false,
@@ -160,7 +159,7 @@ export function getDb() {
         },
     }
 
-    const db = new Database(config as any, getLogger(), getProfiler()) as DatabaseContract;
+    const db = new Database(config as any, getLogger(), getProfiler(), getEmitter()) as DatabaseContract;
 
     return db;
 }

@@ -77,6 +77,8 @@ export class Container {
         return new Proxy(this, handler);
     }
 
+    protected _basePath: string = process.cwd();
+
     static instance: Container = undefined;
 
     private bindings: Map<NameSapceType, Binding> = new Map<NameSapceType, Binding>();

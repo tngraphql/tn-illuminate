@@ -90,9 +90,9 @@ export class RollbackCommand extends MigrationsBaseCommand {
     /**
          * New up migrator
          */
-    const { Migrator } = await import('@adonisjs/lucid/build/src/Migrator')
+    const { Migrator } = await import('@tngraphql/lucid/build/src/Migrator/Migrator')
 
-    const migrator = new Migrator(this.db, this.application, {
+    const migrator = new Migrator(this.db, this.application as any, {
       direction: 'down',
       batch: this.batch,
       connectionName: this.connection,
