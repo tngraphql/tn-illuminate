@@ -53,8 +53,12 @@ export class Injector {
 
         this.services.set(target, value);
 
-        this.applyPropertyHandlers(target, value);
+        this.applyPropertyHandlers(target, value, args);
         return value;
+    }
+
+    public getParams(params, args) {
+        return params;
     }
 
     public injectMethodDependencies(target, method, runtimeValues = []) {
@@ -71,13 +75,19 @@ export class Injector {
      * class constructor
      */
     private resolveInjections(targetName: string, injections: any[], runtimeValues: any[]): any[] {
+        let resolveData = null;
+        if (runtimeValues && !Array.isArray(runtimeValues)) {
+            resolveData = runtimeValues;
+            runtimeValues = [];
+        }
+
         /**
          * If the runtime values length is greater or same as the length
          * of injections, then we treat them as the source of truth
          * and inject them as it is
          */
         if ( runtimeValues && runtimeValues.length >= injections.length ) {
-            return runtimeValues
+            return runtimeValues;
         }
 
         /**
@@ -89,11 +99,15 @@ export class Injector {
                 return runtimeValues[index]
             }
 
+            if (typeof injection === 'object' && injection.kind === 'custom') {
+                return injection.resolver(resolveData);
+            }
+
             /**
              * Disallow object and primitive constructors
              */
             if ( isPrimtiveConstructor(injection) ) {
-                throw InvalidInjectionException.invoke(injections[index], targetName, index)
+                throw InvalidInjectionException.invoke(injections[index], targetName, index);
             }
 
             if ( injection.forwardRef ) {
@@ -124,13 +138,19 @@ export class Injector {
     /**
      * Applies all registered handlers on a given target class.
      */
-    private applyPropertyHandlers(target: Function, instance: { [key: string]: any }) {
+    private applyPropertyHandlers(target: Function, instance: { [key: string]: any }, res) {
         Injector.handlers.forEach(handler => {
             if ( typeof handler.index === 'number' ) return;
             if ( handler.object.constructor !== target && ! (target.prototype instanceof handler.object.constructor) )
                 return;
 
-            instance[handler.propertyName] = this.make(handler.value());
+            const value = handler.value();
+
+            if (typeof value === 'object' && value.kind === 'custom') {
+                instance[handler.propertyName] = value.resolver(!Array.isArray(res) ? res : null);
+            } else {
+                instance[handler.propertyName] = this.make(value);
+            }
         });
     }
 

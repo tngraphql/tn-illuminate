@@ -9,7 +9,7 @@ import { Container } from '../src/Container/Container';
 import { join } from 'path';
 import { Filesystem } from '@poppinss/dev-utils/build';
 import { Service } from '../src/Decorators/Service';
-import { Inject } from '../src/Decorators';
+import {Inject, ResolveData} from '../src/Decorators';
 
 const fs = new Filesystem(join(__dirname, './app'));
 
@@ -431,6 +431,9 @@ describe('Container', () => {
             class Foo {
                 constructor(@Inject('App/Bar') public bar: any) {
                 }
+
+                @Inject('App/Bar')
+                public bar2;
             }
 
             class Bar {
@@ -441,6 +444,36 @@ describe('Container', () => {
             });
 
             expect(ioc.make(Foo).bar).toBeInstanceOf(Bar);
+            expect(ioc.make(Foo).bar2).toBeInstanceOf(Bar);
+        });
+
+        it('make instace of class and ResolveData dependencies', async () => {
+            const ioc = Container.getInstance();
+
+            @Service()
+            class Foo {
+                constructor(@Inject('App/Bar') public bar: any, @ResolveData() public resolveData) {
+                }
+
+                @ResolveData() public resolveData2;
+            }
+
+            class Bar {
+            }
+
+            ioc.bind('App/Bar', () => {
+                return new Bar()
+            });
+
+            expect(ioc.make(Foo, {info: 'info'}).resolveData).toEqual({info: 'info'});
+            expect(ioc.make(Foo, [1]).resolveData).toEqual(null);
+            expect(ioc.make(Foo, [1]).bar).toEqual(1);
+            expect(ioc.make(Foo).resolveData).toEqual(null);
+            expect(ioc.make(Foo).bar).toBeInstanceOf(Bar);
+
+            expect(ioc.make(Foo, {info: 'info'}).resolveData2).toEqual({info: 'info'});
+            expect(ioc.make(Foo, [1]).resolveData2).toEqual(null);
+            expect(ioc.make(Foo).resolveData2).toEqual(null);
         });
 
         it('do not make instance when namespace is a binding', async () => {
