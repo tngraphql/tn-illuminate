@@ -65,10 +65,10 @@ export class GraphQLKernel {
                 if ( typeof someClass === 'string' ) {
                     const lookedupNode = app.lookup(someClass);
                     if ( lookedupNode && lookedupNode.type === 'binding' ) {
-                        return app.make(lookedupNode.namespace);
+                        return app.make(lookedupNode.namespace, resolverData);
                     }
                 }
-                return app.make(someClass);
+                return app.make(someClass, resolverData);
             },
             lookup(namespace: string) {
                 return app.use(namespace);
