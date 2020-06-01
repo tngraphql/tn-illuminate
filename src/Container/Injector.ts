@@ -57,10 +57,6 @@ export class Injector {
         return value;
     }
 
-    public getParams(params, args) {
-        return params;
-    }
-
     public injectMethodDependencies(target, method, runtimeValues = []) {
         const constructor = target.constructor;
 
@@ -114,7 +110,7 @@ export class Injector {
                 return CreateProxyReference(injection.value, this.app);
             }
 
-            return this.make<any>(injection);
+            return this.make<any>(injection, resolveData);
         })
     }
 
@@ -149,16 +145,16 @@ export class Injector {
             if (typeof value === 'object' && value.kind === 'custom') {
                 instance[handler.propertyName] = value.resolver(!Array.isArray(res) ? res : null);
             } else {
-                instance[handler.propertyName] = this.make(value);
+                instance[handler.propertyName] = this.make(value, res);
             }
         });
     }
 
-    private make<T = any>(concrete: NameSapceType): T {
+    private make<T = any>(concrete: NameSapceType, resolveData): T {
         if ( typeof (concrete) !== 'string' && ! this.app.lookup(concrete) ) {
-            return this.injectDependencies(concrete);
+            return this.injectDependencies(concrete, true, resolveData);
         }
-        return this.app.make(concrete);
+        return this.app.make(concrete, resolveData);
     }
 
     /**

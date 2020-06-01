@@ -452,17 +452,28 @@ describe('Container', () => {
 
             @Service()
             class Foo {
-                constructor(@Inject('App/Bar') public bar: any, @ResolveData() public resolveData) {
+                constructor(@Inject(() => Bar) public bar: any, @ResolveData() public resolveData) {
                 }
 
                 @ResolveData() public resolveData2;
+
+                @Inject(() => Bar) public bar2: any
+
+                @Inject('App/Bar') public bar3: any
             }
 
             class Bar {
+                @Inject(() => BarNested) public bar: any
+
+                @ResolveData() public resolveData;
             }
 
-            ioc.bind('App/Bar', () => {
-                return new Bar()
+            class BarNested {
+                @ResolveData() public resolveData;
+            }
+
+            ioc.bind('App/Bar', (app, args) => {
+                return args
             });
 
             expect(ioc.make(Foo, {info: 'info'}).resolveData).toEqual({info: 'info'});
@@ -474,6 +485,10 @@ describe('Container', () => {
             expect(ioc.make(Foo, {info: 'info'}).resolveData2).toEqual({info: 'info'});
             expect(ioc.make(Foo, [1]).resolveData2).toEqual(null);
             expect(ioc.make(Foo).resolveData2).toEqual(null);
+
+            expect(ioc.make(Foo, {info: 'info'}).bar.resolveData).toEqual({info: 'info'});
+            expect(ioc.make(Foo, {info: 'info'}).bar3).toEqual({info: 'info'});
+            expect(ioc.make(Foo, {info: 'info'}).bar.bar.resolveData).toEqual({info: 'info'});
         });
 
         it('do not make instance when namespace is a binding', async () => {

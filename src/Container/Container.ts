@@ -426,7 +426,7 @@ export class Container {
             throw new Error(`Cannot resolve ${ namespaceToString(namespace) } binding from the IoC Container`)
         }
 
-        let value = binding.value.bind(binding.value, this).apply(null, args);
+        let value = binding.value.bind(binding.value, this).apply(null, [args]);
 
         if ( binding.singleton && ! needsContextualBuild ) {
             this.instance(namespace as string, value);
