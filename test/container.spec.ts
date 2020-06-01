@@ -10,6 +10,7 @@ import { join } from 'path';
 import { Filesystem } from '@poppinss/dev-utils/build';
 import { Service } from '../src/Decorators/Service';
 import {Inject, ResolveData} from '../src/Decorators';
+import {Application} from "../src/Foundation";
 
 const fs = new Filesystem(join(__dirname, './app'));
 
@@ -447,6 +448,31 @@ describe('Container', () => {
             expect(ioc.make(Foo).bar2).toBeInstanceOf(Bar);
         });
 
+        it('make args binding using Closure auto', async () => {
+            const ioc = Container.getInstance();
+
+            class Bar {
+
+            }
+
+            @Service()
+            class Foo {
+                constructor(public bar: Bar, @ResolveData() public resolveData) {
+                }
+            }
+
+            ioc.bind('foo', Foo);
+            ioc.singleton('foo2', Foo);
+
+            expect(ioc.make('foo', [{name: 'bar'}]).bar).toEqual({name: 'bar'});
+            expect(ioc.make('foo', {name: 'bar'}).bar).toBeInstanceOf(Bar);
+            expect(ioc.make('foo', {name: 'bar'}).resolveData).toEqual({name: 'bar'});
+
+            expect(ioc.make('foo2', [{name: 'bar'}]).bar).toEqual({name: 'bar'});
+            expect(ioc.make('foo2', {name: 'bar'}).bar).toBeInstanceOf(Bar);
+            expect(ioc.make('foo2', {name: 'bar'}).resolveData).toEqual({name: 'bar'});
+        });
+
         it('make instace of class and ResolveData dependencies', async () => {
             const ioc = Container.getInstance();
 
@@ -472,8 +498,8 @@ describe('Container', () => {
                 @ResolveData() public resolveData;
             }
 
-            ioc.bind('App/Bar', (app, args) => {
-                return args
+            ioc.bind('App/Bar', function (app, args) {
+                return args;
             });
 
             expect(ioc.make(Foo, {info: 'info'}).resolveData).toEqual({info: 'info'});
@@ -489,6 +515,27 @@ describe('Container', () => {
             expect(ioc.make(Foo, {info: 'info'}).bar.resolveData).toEqual({info: 'info'});
             expect(ioc.make(Foo, {info: 'info'}).bar3).toEqual({info: 'info'});
             expect(ioc.make(Foo, {info: 'info'}).bar.bar.resolveData).toEqual({info: 'info'});
+        });
+
+        it('single', async () => {
+            const ioc = Container.getInstance();
+
+            @Service()
+            class Foo {
+                constructor(public app: Application) {
+                }
+            }
+
+            @Service()
+            class Bar extends Foo{
+                constructor(app: Application) {
+                    super(app);
+                }
+            }
+
+            ioc.singleton('foo', Bar);
+
+            console.log(ioc.make('foo'));
         });
 
         it('do not make instance when namespace is a binding', async () => {

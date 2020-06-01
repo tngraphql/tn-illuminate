@@ -329,11 +329,8 @@ export class Container {
      */
     public getClosure(namespace: NameSapceType, concrete: Function | BindCallback) {
         const instance = this;
-        return function() {
-            const args = _.toArray(arguments);
-            args.shift();
+        return function(app, args) {
             return instance.injector.injectDependencies(concrete as any, false, args);
-            // return instance.make(concrete, args, false);
         }
     }
 

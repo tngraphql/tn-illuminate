@@ -21,5 +21,6 @@ module.exports = {
       // "**/validate/*.spec.ts",
 
   ],
+  testTimeout: 20000
   // "setupTestFrameworkScriptFile": "<rootDir>/setupTests.js"
 };

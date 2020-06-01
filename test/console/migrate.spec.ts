@@ -25,7 +25,6 @@ import { StatusCommand } from '../../src/Database/migration/StatusCommand';
 let db: ReturnType<typeof getDb>
 let fs = new Filesystem(join(__dirname, 'app'))
 describe('Migrate', () => {
-
     describe('Migrate | Fresh', () => {
         beforeEach(async () => {
             fs = new Filesystem(join(__dirname, `app${Math.ceil(Number((Math.random()+'').replace('0.','')))}`))
