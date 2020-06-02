@@ -54,7 +54,9 @@ export class GraphQLKernel {
     }
 
     public async bootstrap() {
-        await this.app.bootstrapWith(this.bootstrappers);
+        if (! this.app.hasBeenBootstrapped()) {
+            await this.app.bootstrapWith(this.bootstrappers);
+        }
     }
 
     public async complie() {
