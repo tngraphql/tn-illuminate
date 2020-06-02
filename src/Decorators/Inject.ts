@@ -10,13 +10,13 @@
 import { Injector } from '../Container';
 import { isClass } from '../utils';
 import { CannotInjectError } from '../Container/CannotInjectError';
-import { ClassType } from '@tngraphql/graphql';
+import {ClassType, ResolverData} from '@tngraphql/graphql';
 
 export const OPTIONAL_DEPS_METADATA = 'optional:paramtypes';
 
 export const OPTIONAL_PROPERTY_DEPS_METADATA = 'optional:properties_metadata';
 
-export function registerCustomInject(callback): Function {
+export function registerCustomInject(callback: (resolverData: ResolverData) => any): Function {
     return () => {
         return (target, propertyName, index) => {
             Injector.registerHandler({
