@@ -16,7 +16,7 @@ export const OPTIONAL_DEPS_METADATA = 'optional:paramtypes';
 
 export const OPTIONAL_PROPERTY_DEPS_METADATA = 'optional:properties_metadata';
 
-export function registerCustomInject(callback: (resolverData: ResolverData) => any): Function {
+export function registerCustomInject(callback: (resolverData: ResolverData<any>) => any): Function {
     return () => {
         return (target, propertyName, index) => {
             Injector.registerHandler({
