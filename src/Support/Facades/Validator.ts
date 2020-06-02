@@ -11,4 +11,5 @@ import {Factory} from "../../Foundation/Validate/Factory";
  * file that was distributed with this source code.
  */
 
-export const Validator: Factory = Facade.create<any>('validator');
+export const Validator: Factory = Facade.create<Factory>('validator');
+
