@@ -65,7 +65,7 @@ export class ConsoleKernel {
 
     public getAce(): Ace {
         if ( ! this.ace ) {
-            this.ace = new Ace(this.app).register(this.commands);
+            return this.ace = new Ace(this.app).register(this.commands);
         }
         return this.ace;
     }
