@@ -45,6 +45,7 @@ export class ConsoleKernel {
         } catch (e) {
             console.log(e);
         }
+        process.exit();
     }
 
     public async bootstrap() {
