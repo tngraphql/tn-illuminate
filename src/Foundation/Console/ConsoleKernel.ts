@@ -38,7 +38,7 @@ export class ConsoleKernel {
 
     }
 
-    async handle() {
+    public async handle() {
         try {
             await this.bootstrap();
             await this.getAce().handle(process.argv.splice(2));
@@ -48,7 +48,9 @@ export class ConsoleKernel {
     }
 
     public async bootstrap() {
-        await this.app.bootstrapWith(this.bootstrappers);
+        if (! this.app.hasBeenBootstrapped()) {
+            await this.app.bootstrapWith(this.bootstrappers);
+        }
     }
 
     public registerCommand(command: ClassType<BaseCommand> | ClassType<BaseCommand>[]) {

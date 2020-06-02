@@ -35,6 +35,8 @@ export class Application extends Container implements ApplicationContract{
 
     protected _instances = new Map();
 
+    protected _hasBeenBootstrapped: boolean = false;
+
     public environment = undefined;
 
     protected _environmentPath: string = undefined;
@@ -102,9 +104,18 @@ export class Application extends Container implements ApplicationContract{
     }
 
     public async bootstrapWith(bootstrappers: any[]) {
+        this._hasBeenBootstrapped = true;
+
         for await(const bootstrapper of bootstrappers ) {
             await this.make<any>(bootstrapper).bootstrap(this);
         }
+    }
+
+    /**
+     * Determine if the application has been bootstrapped before.
+     */
+    public hasBeenBootstrapped(): boolean {
+        return this._hasBeenBootstrapped;
     }
 
     /**
