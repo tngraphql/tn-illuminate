@@ -34,9 +34,6 @@ export class SeedCommand extends BaseCommand {
   @flags.string({ description: 'Run only selected files' })
   public files: string
 
-  @flags.boolean({ description: 'Do not close database connection when seeder.run finishes' })
-  public keepAlive: boolean
-
   protected _seedsPath: string = this.application.basePath('database/seeds')
 
   constructor (public application: ApplicationContract, kernel) {
@@ -78,9 +75,6 @@ export class SeedCommand extends BaseCommand {
       this.logger.success(`Seeded database in ${ prettyHrTime(endTime) }`)
     } catch (e) {
       console.log(e)
-    }
-    if (! this.keepAlive) {
-      await this.application.use('db').manager.closeAll()
     }
   }
 

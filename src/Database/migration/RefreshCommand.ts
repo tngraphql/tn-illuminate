@@ -27,9 +27,6 @@ export class RefreshCommand extends BaseCommand {
   })
   public batch: number = 0
 
-  @flags.boolean({ description: 'Do not close database connection when seeder.run finishes' })
-  public keepAlive: boolean
-
   async handle (): Promise<any> {
     if (! this.batch) {
       await this.runReset()
@@ -40,15 +37,13 @@ export class RefreshCommand extends BaseCommand {
     await this.kernel.exec('migration:run', this.parse({
       '--force': this.force,
       '--dry-run': this.dryRun,
-      '--connection': this.connection,
-      '--keep-alive': this.keepAlive,
+      '--connection': this.connection
     }))
   }
 
   async runRollback () {
     return this.kernel.exec('migration:rollback', this.parse({
       '--batch': this.batch,
-      '--keep-alive': true,
       '--force': this.force,
       '--dry-run': this.dryRun,
       '--connection': this.connection,
@@ -57,7 +52,6 @@ export class RefreshCommand extends BaseCommand {
 
   async runReset () {
     return this.kernel.exec('migration:reset', this.parse({
-      '--keep-alive': true,
       '--force': this.force,
       '--dry-run': this.dryRun,
       '--connection': this.connection,

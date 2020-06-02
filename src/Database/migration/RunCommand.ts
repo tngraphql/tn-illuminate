@@ -35,9 +35,6 @@ export class RunCommand extends MigrationsBaseCommand {
   @flags.boolean({ description: 'Indicates if the seed task should be re-run' })
   public seed: boolean
 
-  @flags.boolean({ description: 'Do not close database connection when seeder.run finishes' })
-  public keepAlive: boolean
-
   /**
      * This command loads the application, since we need the runtime
      * to find the migration directories for a given connection
@@ -100,16 +97,10 @@ export class RunCommand extends MigrationsBaseCommand {
     if (this.seed) {
       await this.runSeed()
     }
-
-    // close connection db
-    if (! this.keepAlive) {
-      await migrator.close()
-    }
   }
 
   runSeed () {
     return this.kernel.exec('seed', this.parse({
-      '--keep-alive': true,
       '--force': true,
     }))
   }

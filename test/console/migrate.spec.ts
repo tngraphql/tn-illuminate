@@ -60,7 +60,6 @@ module.exports = class User extends Schema {
             const kernel: any = await app.make<ConsoleKernel>(ConsoleKernel)
 
             const migrate = new RunCommand(app, kernel.getAce(), db)
-            migrate.keepAlive = true
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
@@ -252,7 +251,6 @@ export class UserSeeder {
                 prompt.accept();
             })
             migrate.seed = true
-            migrate.keepAlive = true;
             await migrate.handle()
             db = getDb()
 
@@ -260,7 +258,7 @@ export class UserSeeder {
             expect(migrated).toHaveLength(1);
         }, 6000)
 
-        test('prompt during migrations in keepAlive without force flag', async () => {
+        test('prompt during migrations in keepalive without force flag', async () => {
             expect.assertions(2);
 
             await fs.add('database/migrations/users.ts', `
@@ -279,7 +277,6 @@ public async up () {
             app.environment = 'test'
 
             const migrate = new RunCommand(app, new Kernel(app), db)
-            migrate.keepAlive = true
             migrate.prompt.on('prompt', (prompt) => {
                 expect(prompt.message).toBe('You are in production environment. Want to continue running migrations?');
                 prompt.accept()
@@ -391,7 +388,6 @@ module.exports = class User extends Schema {
             const kernel: any = await app.make<ConsoleKernel>(ConsoleKernel)
 
             const migrate = new RunCommand(app, kernel.getAce(), db)
-            migrate.keepAlive = true
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
@@ -455,7 +451,6 @@ module.exports = class User2 extends Schema {
             const kernel: any = await app.make<ConsoleKernel>(ConsoleKernel)
 
             const migrate = new RunCommand(app, kernel.getAce(), db)
-            migrate.keepAlive = true
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
@@ -476,8 +471,6 @@ module.exports = class User2 extends Schema {
             kernel.registerCommand([RollbackCommand])
 
             const reset = new ResetCommand(app, kernel.getAce())
-
-            // reset.keepAlive = true;
 
             await reset.handle()
 
@@ -521,7 +514,6 @@ module.exports = class User2 extends Schema {
             const kernel: ConsoleKernel = await app.make<ConsoleKernel>(ConsoleKernel)
 
             const migrate = new RunCommand(app, kernel.getAce(), db)
-            migrate.keepAlive = true
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `
@@ -540,8 +532,6 @@ module.exports = class User2 extends Schema {
             await migrate.handle()
 
             const reset = new RollbackCommand(app, kernel.getAce(), db)
-
-            reset.keepAlive = true
 
             reset.batch = 1
 
@@ -582,7 +572,6 @@ module.exports = class User2 extends Schema {
             const kernel: any = await app.make<ConsoleKernel>(ConsoleKernel)
 
             const migrate = new RunCommand(app, kernel.getAce(), db)
-            migrate.keepAlive = true
             await migrate.handle()
 
             await fs.add('database/migrations/users2.ts', `

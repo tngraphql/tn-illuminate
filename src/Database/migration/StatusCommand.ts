@@ -84,7 +84,6 @@ export class StatusCommand extends MigrationsBaseCommand {
     })
 
     const list = await migrator.getList()
-    await migrator.close()
 
     this.printPreviewMessage()
 
