@@ -4,17 +4,17 @@ exports[`Migrate Make make a new migrate 1`] = `
 "import { Schema as BaseSchema } from '@tngraphql/lucid/build/src/Schema';
 import { CreateTableBuilder } from 'knex';
 
-export default class Users extends BaseSchema {
-    protected $tableName = 'users'
+export default class User extends BaseSchema {
+    protected $tableName = 'user'
 
-    public async up () {
+    public async up() {
         this.schema.createTable(this.$tableName, (table: CreateTableBuilder) => {
             table.increments('id')
-            table.timestamps(true)
+            table.timestamps()
         })
     }
 
-    public async down () {
+    public async down() {
         this.schema.dropTable(this.$tableName)
     }
 }

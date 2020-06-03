@@ -4,14 +4,14 @@ import { CreateTableBuilder } from 'knex';
 export default class ${toClassName(filename)} extends BaseSchema {
     protected $tableName = '${toTableName(filename)}'
 
-    public async up () {
+    public async up() {
         this.schema.createTable(this.$tableName, (table: CreateTableBuilder) => {
             table.increments('id')
-            table.timestamps(true)
+            table.timestamps()
         })
     }
 
-    public async down () {
+    public async down() {
         this.schema.dropTable(this.$tableName)
     }
 }

@@ -63,7 +63,7 @@ export class MigrateMakeCommand extends GeneratorCommand {
          */
         const prefix = `${new Date().getTime()}_`
 
-        const file = new GeneratorFile(this.buildClass(this.name), { pattern: 'snakecase', form: 'plural', prefix});
+        const file = new GeneratorFile(this.buildClass(this.name), { pattern: 'snakecase', prefix});
 
         file.destinationDir(path.join(this.application.getBasePath(), 'database/migrations'));
 
