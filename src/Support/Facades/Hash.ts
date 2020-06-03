@@ -7,4 +7,4 @@
 import {Facade} from "../Facade";
 import {HashManager} from "../../Hashing/HashManager";
 
-export const Factory: HashManager = Facade.create<HashManager>('hash')
+export const Hash: HashManager = Facade.create<HashManager>('hash')
