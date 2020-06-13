@@ -58,21 +58,28 @@ export function compileRules(object, key = '') {
     return res;
 }
 
-export function compileMessages(object, key = '') {
+export function compileMessages(object, key = '', ctx: any) {
     let res = {};
 
     for( let index in object ) {
         if ( object[index] instanceof RuleValue) {
-            res = merge(mapMessage(`${ key }${ index }`, object[index].messages), res);
+            res = merge(mapMessage(`${ key }${ index }`, fnMessage(object[index].messages, ctx)), res);
         } else if ( Array.isArray(object[index]) ) {
             (object[index] as any[]).forEach(((value, index1) => {
-                res = merge(compileMessages(value, `${ key }${ index }.*.`), res);
+                res = merge(compileMessages(value, `${ key }${ index }.*.`, ctx), res);
             }));
         } else {
-            res = merge(compileMessages(object[index], `${ key }${ index }.`), res);
+            res = merge(compileMessages(object[index], `${ key }${ index }.`, ctx), res);
         }
     }
     return res;
+}
+
+export function fnMessage(message, context) {
+    if (typeof message === "function") {
+        return message(context)
+    }
+    return message;
 }
 
 function mapMessage(key, values: {[key: string]: string}) {
