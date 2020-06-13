@@ -23,12 +23,7 @@ export interface Blueprint<T = any> {
 export class DBFactory {
   protected _blueprints: Blueprint[] = []
 
-  protected app: ApplicationContract = new Application();
-
-  constructor (app?: ApplicationContract) {
-    if (app) {
-      this.app = app
-    }
+  constructor (public app?: ApplicationContract) {
   }
 
   /**

@@ -9,11 +9,11 @@
 
 import * as CliTable from 'cli-table3'
 import { flags, Kernel } from '@tngraphql/console'
-import { DatabaseContract } from '@ioc:Adonis/Lucid/Database'
-import { MigrationListNode } from '@ioc:Adonis/Lucid/Migrator'
 import { MigrationsBaseCommand } from './MigrationsBaseCommand'
 import { ApplicationContract } from '../../Contracts/ApplicationContract';
 import { Inject } from '../../Decorators';
+import {DatabaseContract} from "@tngraphql/lucid/build/src/Contracts/Database/DatabaseContract";
+import {MigrationListNode} from "@tngraphql/lucid/build/src/Contracts/MigratorContract";
 
 interface DBInterface extends DatabaseContract {
 
@@ -76,15 +76,14 @@ export class StatusCommand extends MigrationsBaseCommand {
       return
     }
 
-    const { Migrator } = await import('@adonisjs/lucid/build/src/Migrator')
+    const { Migrator } = await import('@tngraphql/lucid/build/src/Migrator/Migrator')
 
-    const migrator = new Migrator(this.db, this.application, {
+    const migrator = new Migrator(this.db, this.application as any, {
       direction: 'up',
       connectionName: this.connection,
     })
 
     const list = await migrator.getList()
-    await migrator.close()
 
     this.printPreviewMessage()
 

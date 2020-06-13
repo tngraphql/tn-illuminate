@@ -1,5 +1,5 @@
 import { Facade } from '../Facade';
-import {DatabaseContract} from "@ioc:Adonis/Lucid/Database";
+import {DatabaseContract} from "@tngraphql/lucid/build/src/Contracts/Database/DatabaseContract";
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>

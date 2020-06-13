@@ -38,17 +38,20 @@ export class ConsoleKernel {
 
     }
 
-    async handle() {
+    public async handle() {
         try {
             await this.bootstrap();
             await this.getAce().handle(process.argv.splice(2));
         } catch (e) {
             console.log(e);
         }
+        process.exit();
     }
 
     public async bootstrap() {
-        await this.app.bootstrapWith(this.bootstrappers);
+        if (! this.app.hasBeenBootstrapped()) {
+            await this.app.bootstrapWith(this.bootstrappers);
+        }
     }
 
     public registerCommand(command: ClassType<BaseCommand> | ClassType<BaseCommand>[]) {
@@ -62,7 +65,7 @@ export class ConsoleKernel {
 
     public getAce(): Ace {
         if ( ! this.ace ) {
-            this.ace = new Ace(this.app).register(this.commands);
+            return this.ace = new Ace(this.app).register(this.commands);
         }
         return this.ace;
     }

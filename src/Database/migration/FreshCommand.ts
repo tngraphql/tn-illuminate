@@ -27,23 +27,18 @@ export class FreshCommand extends BaseCommand {
   })
   public batch: number
 
-  @flags.boolean({ description: 'Do not close database connection when seeder.run finishes' })
-  public keepAlive: boolean
-
   public async handle (): Promise<any> {
     await this.runReset()
 
     await this.kernel.exec('migration:run', this.parse({
       '--force': this.force,
       '--dry-run': this.dryRun,
-      '--connection': this.connection,
-      '--keep-alive': this.keepAlive,
+      '--connection': this.connection
     }))
   }
 
   public async runReset () {
     return this.kernel.exec('migration:reset', this.parse({
-      '--keep-alive': true,
       '--force': this.force,
       '--dry-run': this.dryRun,
       '--connection': this.connection,

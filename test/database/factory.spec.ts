@@ -16,8 +16,10 @@ import { DBFactory } from '../../src/Database/Factory/DBFactory';
 import { ModelFactory } from '../../src/Database/Factory/ModelFactory';
 import { cleanup, getDb, setup } from '../validate/helpers';
 import { DatabaseFactory } from '../../src/Database/Factory/DatabaseFactory';
-import { Adapter, BaseModel, column } from '../../src/Contracts/database/aliases';
 import { chance } from '../../src/Database/Factory/chance';
+import {Adapter} from "@tngraphql/lucid/build/src/Orm/Adapter/Adapter";
+import { BaseModel } from '@tngraphql/lucid/build/src/Orm/BaseModel';
+import { column } from '@tngraphql/lucid/build/src/Orm/Decorators';
 
 let db: ReturnType<typeof getDb>
 let app

@@ -22,16 +22,12 @@ export class ResetCommand extends BaseCommand {
   @flags.boolean({ description: 'Explictly force to run migrations in production' })
   public force: boolean
 
-  @flags.boolean({ description: 'Do not close database connection when seeder.run finishes' })
-  public keepAlive: boolean
-
   async handle (): Promise<any> {
     await this.kernel.exec('migration:rollback', this.parse({
       '--batch': 0,
       '--force': this.force,
       '--dry-run': this.dryRun,
-      '--connection': this.connection,
-      '--keep-alive': this.keepAlive,
+      '--connection': this.connection
     }))
   }
 

@@ -1,15 +1,15 @@
 import * as path from 'path';
 import { ServiceProvider } from '../Support/ServiceProvider';
 import {
-    Adapter,
-    BaseModel,
     belongsTo,
     column,
     computed,
-    Database,
     hasMany, hasManyThrough,
     hasOne, manyToMany
-} from '../Contracts/database/aliases';
+} from '@tngraphql/lucid/build/src/Orm/Decorators';
+import { Database } from '@tngraphql/lucid';
+import { BaseModel } from '@tngraphql/lucid/build/src/Orm/BaseModel';
+import { Adapter } from '@tngraphql/lucid/build/src/Orm/Adapter/Adapter';
 
 
 /**
@@ -30,9 +30,10 @@ export class DatabaseServiceProvider extends ServiceProvider {
         this.app.singleton('db', () => {
             this.mergeConfigFrom(path.join(__dirname, '../config/database'), 'database');
 
-            const db = new Database(this.app.config.get('database'), this.app.log, this.app.profiler);
+            const db = new Database(this.app.config.get('database'), this.app.log, this.app.profiler, this.app.events);
 
-            BaseModel.$adapter = new Adapter(db);
+            // BaseModel.$adapter = new Adapter(db);
+            // BaseModel.$container = this.app;
 
             return db;
         });

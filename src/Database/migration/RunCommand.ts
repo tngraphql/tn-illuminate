@@ -35,9 +35,6 @@ export class RunCommand extends MigrationsBaseCommand {
   @flags.boolean({ description: 'Indicates if the seed task should be re-run' })
   public seed: boolean
 
-  @flags.boolean({ description: 'Do not close database connection when seeder.run finishes' })
-  public keepAlive: boolean
-
   /**
      * This command loads the application, since we need the runtime
      * to find the migration directories for a given connection
@@ -87,8 +84,8 @@ export class RunCommand extends MigrationsBaseCommand {
     /**
      * New up migrator
      */
-    const { Migrator } = await import('@adonisjs/lucid/build/src/Migrator');
-    const migrator = new Migrator(this.db, this.application, {
+    const { Migrator } = await import('@tngraphql/lucid/build/src/Migrator/Migrator');
+    const migrator = new Migrator(this.db, this.application as any, {
       direction: 'up',
       connectionName: this.connection,
       dryRun: this.dryRun,
@@ -100,16 +97,10 @@ export class RunCommand extends MigrationsBaseCommand {
     if (this.seed) {
       await this.runSeed()
     }
-
-    // close connection db
-    if (! this.keepAlive) {
-      await migrator.close()
-    }
   }
 
   runSeed () {
     return this.kernel.exec('seed', this.parse({
-      '--keep-alive': true,
       '--force': true,
     }))
   }

@@ -5,11 +5,10 @@
  * file.
  */
 
-import { OrmConfigContract } from '@ioc:Adonis/Lucid/Orm'
-import { DatabaseConfigContract } from '@ioc:Adonis/Lucid/Database'
 import { Env } from '../Support/Env';
+import { join } from 'path'
 
-const databaseConfig: DatabaseConfigContract & { orm: Partial<OrmConfigContract> } = {
+const databaseConfig = {
   /*
   |--------------------------------------------------------------------------
   | Connection
@@ -37,7 +36,7 @@ const databaseConfig: DatabaseConfigContract & { orm: Partial<OrmConfigContract>
     sqlite: {
       client: 'sqlite',
       connection: {
-        filename: 'tmp',
+        filename: join(process.cwd(), 'db.sqlite'),
       },
       useNullAsDefault: true,
       healthCheck: false,

@@ -77,6 +77,8 @@ export class Container {
         return new Proxy(this, handler);
     }
 
+    protected _basePath: string = process.cwd();
+
     static instance: Container = undefined;
 
     private bindings: Map<NameSapceType, Binding> = new Map<NameSapceType, Binding>();
@@ -327,11 +329,8 @@ export class Container {
      */
     public getClosure(namespace: NameSapceType, concrete: Function | BindCallback) {
         const instance = this;
-        return function() {
-            const args = _.toArray(arguments);
-            args.shift();
+        return function(app, args) {
             return instance.injector.injectDependencies(concrete as any, false, args);
-            // return instance.make(concrete, args, false);
         }
     }
 
@@ -424,7 +423,7 @@ export class Container {
             throw new Error(`Cannot resolve ${ namespaceToString(namespace) } binding from the IoC Container`)
         }
 
-        let value = binding.value.bind(binding.value, this).apply(null, args);
+        let value = binding.value.bind(binding.value, this).apply(null, [args]);
 
         if ( binding.singleton && ! needsContextualBuild ) {
             this.instance(namespace as string, value);

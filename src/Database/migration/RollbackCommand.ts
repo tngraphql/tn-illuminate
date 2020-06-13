@@ -34,9 +34,6 @@ export class RollbackCommand extends MigrationsBaseCommand {
   })
   public batch: number
 
-  @flags.boolean({ description: 'Do not close database connection when seeder.run finishes' })
-  public keepAlive: boolean
-
   /**
      * This command loads the application, since we need the runtime
      * to find the migration directories for a given connection
@@ -90,9 +87,9 @@ export class RollbackCommand extends MigrationsBaseCommand {
     /**
          * New up migrator
          */
-    const { Migrator } = await import('@adonisjs/lucid/build/src/Migrator')
+    const { Migrator } = await import('@tngraphql/lucid/build/src/Migrator/Migrator')
 
-    const migrator = new Migrator(this.db, this.application, {
+    const migrator = new Migrator(this.db, this.application as any, {
       direction: 'down',
       batch: this.batch,
       connectionName: this.connection,
@@ -101,10 +98,5 @@ export class RollbackCommand extends MigrationsBaseCommand {
 
     this.printPreviewMessage()
     await this.runMigrations(migrator)
-
-    // close connection db
-    if (! this.keepAlive) {
-      await migrator.close()
-    }
   }
 }

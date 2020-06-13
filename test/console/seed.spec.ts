@@ -55,7 +55,7 @@ Factory.blueprint('factory', () => {
 
 export class UserSeeder {
   public async run () {
-    Factory.get('factory').create({
+    await Factory.get('factory').create({
       name: 'nguyenpl117',
     })
   }
@@ -102,7 +102,7 @@ const Factory: DBFactory = Facade.create('factory')
 
 export class UserSeeder {
   public async run () {
-    Factory.get('factory').create({
+    await Factory.get('factory').create({
       name: 'nguyenpl117',
     })
   }
