@@ -19,7 +19,7 @@ export function ValidateArgs(
     type: ClassType | { [key: string]: string | string[] | object },
     messages?: Message<{ [key: string]: string }>) {
     return createMethodDecorator(async ({args, context}: ResolverData<any>, next) => {
-        messages = fnMessage(messages, context);
+        messages = fnMessage(messages, context, args);
 
         const instance = handlerRulers(type, args);
 
@@ -27,7 +27,7 @@ export function ValidateArgs(
             Validator.useLang(context.lang.getLocale());
         }
 
-        const validation = Validator.make(args, compileRules(instance), merge(compileMessages(instance, '', context), messages));
+        const validation = Validator.make(args, compileRules(instance), merge(compileMessages(instance, '', context, args), messages));
 
         // Check validate.
         await new Promise((resolve, reject) => {
