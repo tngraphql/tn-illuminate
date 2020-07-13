@@ -13,7 +13,7 @@ import {Validator} from '../Support/Facades/Validator';
  * file that was distributed with this source code.
  */
 
-type Message<T> = T | ((context) => T)
+type Message<T> = T | ((context?: any, args?: any) => T)
 
 export function ValidateArgs(
     type: ClassType | { [key: string]: string | string[] | object },
