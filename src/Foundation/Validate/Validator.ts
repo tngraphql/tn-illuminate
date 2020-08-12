@@ -60,7 +60,7 @@ Validator.getPresenceVerifier = function (): PresenceVerifierInterface {
     return path2;
 };*/
 
-/*Validator.register('required', function(val, requirement, attribute) { // requirement parameter defaults to null
+Validator.register('required', function(val, requirement, attribute) { // requirement parameter defaults to null
     let str;
 
     if ( val === undefined || val === null ) {
@@ -75,7 +75,7 @@ Validator.getPresenceVerifier = function (): PresenceVerifierInterface {
 
     return str.length > 0 ? true : false;
 
-}, ':attribute bắt buộc nhập.');*/
+}, ':attribute bắt buộc nhập.');
 
 /**
  *
@@ -114,9 +114,14 @@ Validator.registerAsync('unique', function(value, req, attribute, passes) { // r
     const idColumn = ruleValue.ignore.idColumn || 'id';
 
     try {
-        Validator.getPresenceVerifier().getCount(ruleValue.model, ruleValue.column, value, ruleValue.ignore.id, idColumn, ruleValue.where).then(({total}) => {
-            passes(! total);
-        });
+        Validator.getPresenceVerifier()
+            .getCount(ruleValue.model, ruleValue.column, value, ruleValue.ignore.id, idColumn, ruleValue.where)
+            .then(({total}) => {
+                passes(!total);
+            })
+            .catch(e => {
+                passes(false, e);
+            })
     } catch (e) {
         console.log(e);
     }
@@ -134,13 +139,18 @@ Validator.registerAsync('exists', function(value, req, attribute, passes) { // r
     }
 
     try {
-        Validator.getPresenceVerifier().getCount(ruleValue.model, ruleValue.column, value, undefined, undefined, ruleValue.where).then(({total}) => {
-            if ( Array.isArray(value) && value.length > 1 && total !== value.length ) {
-                passes(false);
-            } else {
-                passes(!! total);
-            }
-        });
+        Validator.getPresenceVerifier()
+            .getCount(ruleValue.model, ruleValue.column, value, undefined, undefined, ruleValue.where)
+            .then(({total}) => {
+                if (Array.isArray(value) && value.length > 1 && total !== value.length) {
+                    passes(false);
+                } else {
+                    passes(!!total);
+                }
+            })
+            .catch(e => {
+                passes(false, e);
+            })
     } catch (e) {
         console.log(e);
     }
