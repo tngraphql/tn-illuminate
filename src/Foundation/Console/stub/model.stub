@@ -3,6 +3,8 @@ import { column } from '@tngraphql/lucid/build/src/Orm/Decorators';
 import { BaseModel } from '@tngraphql/lucid/build/src/Orm/BaseModel';
 
 export default class ${filename} extends BaseModel {
+    static table = 'name'
+
     @column({ isPrimary: true })
     public id: number
 

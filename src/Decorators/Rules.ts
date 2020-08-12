@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { SymbolKeysNotSupportedError } from '@tngraphql/graphql';
+import {SymbolKeysNotSupportedError} from '@tngraphql/graphql';
 import { isClassRule, META_DATA_VALIDATE_KEY } from '../Foundation/Validate/helpers';
 
 export class RuleValue {
@@ -17,9 +17,10 @@ export class RuleValue {
         }
     }
 }
+type Message<T> = T | ((context?: any, args?: any) => T)
 
-export function Rules(options: any, messages?: { [key: string]: string } ): any {
-    return (target, propertyKey) => {
+export function Rules(options: any, messages?: Message<{ [key: string]: string }> ): any {
+    return (target, propertyKey, d) => {
         if ( typeof propertyKey === 'symbol' ) {
             throw new SymbolKeysNotSupportedError();
         }

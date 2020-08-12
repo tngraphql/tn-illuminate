@@ -1,7 +1,7 @@
-import { ClassType, createMethodDecorator, ResolverData } from '@tngraphql/graphql';
-import { compileMessages, compileRules, handlerRulers, merge } from '../Foundation/Validate/helpers';
-import { ValidationError } from './Rules';
-import { Validator } from '../Support/Facades/Validator';
+import {ClassType, createMethodDecorator, ResolverData} from '@tngraphql/graphql';
+import {compileMessages, compileRules, fnMessage, handlerRulers, merge} from '../Foundation/Validate/helpers';
+import {ValidationError} from './Rules';
+import {Validator} from '../Support/Facades/Validator';
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>
@@ -13,16 +13,21 @@ import { Validator } from '../Support/Facades/Validator';
  * file that was distributed with this source code.
  */
 
-export function ValidateArgs(type: ClassType | { [key: string]: string | string[] | object }, messages?: {[key: string]: string}) {
-    return createMethodDecorator(async ({ args, context }: ResolverData<any>, next) => {
+type Message<T> = T | ((context?: any, args?: any) => T)
+
+export function ValidateArgs(
+    type: ClassType | { [key: string]: string | string[] | object },
+    messages?: Message<{ [key: string]: string }>) {
+    return createMethodDecorator(async ({args, context}: ResolverData<any>, next) => {
+        messages = fnMessage(messages, context, args);
 
         const instance = handlerRulers(type, args);
 
-        if ( context.lang ) {
+        if (context && context.lang) {
             Validator.useLang(context.lang.getLocale());
         }
 
-        const validation = Validator.make(args, compileRules(instance), merge(compileMessages(instance), messages));
+        const validation = Validator.make(args, compileRules(instance), merge(compileMessages(instance, '', context, args), messages));
 
         // Check validate.
         await new Promise((resolve, reject) => {

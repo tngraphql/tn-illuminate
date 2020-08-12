@@ -113,6 +113,30 @@ describe('Utils | Handler rulers', () => {
         expect(messages).toEqual({ 'string.name': 'custom message :attribute' });
     });
 
+    it('Handler simple custom message args', async () => {
+        class SimpleArgs {
+            @Rules('string', (ctx, args) => {
+                if (args.type === 'name') {
+                    return {
+                        string: 'custom message name :attribute'
+                    };
+                }
+
+                return {
+                    string: 'custom message :attribute'
+                };
+            })
+            name: string;
+        }
+
+        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        expect(compileMessages(ruleObject)).toEqual({ 'string.name': 'custom message :attribute' });
+        const rules = compileRules(ruleObject);
+        expect(rules).toEqual({ name: 'string' });
+        const messages = compileMessages(ruleObject, '', {}, {type: 'name'});
+        expect(messages).toEqual({ 'string.name': 'custom message name :attribute' });
+    });
+
     it('Handler multiple rule a attribute', async () => {
         class SimpleArgs {
             @Rules(['string', 'max:10'])

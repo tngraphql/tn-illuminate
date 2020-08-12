@@ -26,6 +26,8 @@ export class TranslationServiceProvider extends ServiceProvider{
 
             i18n.init(req, res);
 
+            res.t = res.__;
+
             return res;
         });
     }

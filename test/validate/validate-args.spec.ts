@@ -74,9 +74,9 @@ describe('Validate', () => {
             @Query()
             @ValidateArgs({
                 name: 'in:foo',
-            }, {
+            }, ctx => ({
                 'in.name': 'custom message validate :attribute'
-            })
+            }))
             validateCustomMessageQuery(@Arg('name') name: string): boolean {
                 return true;
             }
