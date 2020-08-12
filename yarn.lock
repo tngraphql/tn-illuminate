@@ -543,7 +543,7 @@
   dependencies:
     type-detect "4.0.8"
 
-"@tngraphql/console@^1.0.0":
+"@tngraphql/console@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@tngraphql/console/-/console-1.0.1.tgz#da086d5c31241d98fc7528c0da8f54662059e2fc"
   integrity sha512-fpD8HUUqwpYjfCXZqmGBGgEJh1jDwnR03nIdlBAP/PBfzowtxYT2bqBy7ps7dHw0psNmhFIGKDjLCPJXF4mtfw==
@@ -564,10 +564,10 @@
     smpltmpl "^1.0.2"
     snake-case "^3.0.3"
 
-"@tngraphql/graphql@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@tngraphql/graphql/-/graphql-1.0.0.tgz#5f2947e348d06d52e731ae24602f3c3ff2984f7a"
-  integrity sha512-Jiz8bJy1Z0TbFRpQEYWq8faMSuWiMp9Pux21XKxIUwEL9KFk7HQx+Gwt1m+xqIiYKHzK2hQAD3qWAwtz7eNH6g==
+"@tngraphql/graphql@^1.0.4-2-alpha":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@tngraphql/graphql/-/graphql-1.0.4.tgz#a9a1723236d323a1a2cab36753f5688df250f59c"
+  integrity sha512-ChhjjOv4YGFeRQvUdL7BZPMtubFMDXKJli8k+jwgfDrR3QHqeCHVro7i/0/BO0M9RETW+kONYsi5+qHwAVomBg==
   dependencies:
     "@poppinss/dev-utils" "^1.0.4"
     "@poppinss/utils" "^2.1.2"
@@ -612,10 +612,10 @@
     uuid "^7.0.3"
     validatorjs "^3.18.1"
 
-"@tngraphql/lucid@^1.0.4":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@tngraphql/lucid/-/lucid-1.0.8.tgz#ac88bf4a9f20fca3441ad42e24befef9b19faf48"
-  integrity sha512-BeEbr5AaxTZnAu/ddnHTiVc65CLCQnFFOSFUGjADO04E/Wogy7DRFYZZQ9Fqdj++pnCFTEfbNUsqNpFYNcrk7A==
+"@tngraphql/lucid@^1.0.18":
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/@tngraphql/lucid/-/lucid-1.0.18.tgz#3d12cbce5e2cb6d252bfa9853c7e424151d70208"
+  integrity sha512-3txRFoyMQ862c2ffs1oDr8gadmjMSW+HX0dw8IYRbk7E+xLAtJijOwPwXypL/8UDhSEKGunrVWhEyBM8NFAwEA==
   dependencies:
     "@poppinss/hooks" "^1.0.5"
     "@poppinss/utils" "^2.2.0"
@@ -627,7 +627,7 @@
     macroable "^4.0.3"
     pluralize "^8.0.0"
 
-"@tngraphql/route@^1.0.0":
+"@tngraphql/route@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@tngraphql/route/-/route-1.0.1.tgz#dc740bd785d310d444704a6bb0a26d5d415801b0"
   integrity sha512-4h1J4LQhwkSWSuC7RkO8SV1RHOlZ88ofPcFTzYbujyrJOEzu5FzB9LsprcgvCQ72Nx9BUushCNW2VsKLssBceQ==
