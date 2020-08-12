@@ -7,9 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import {createMethodDecorator, ResolverData, SymbolKeysNotSupportedError} from '@tngraphql/graphql';
+import {SymbolKeysNotSupportedError} from '@tngraphql/graphql';
 import { isClassRule, META_DATA_VALIDATE_KEY } from '../Foundation/Validate/helpers';
-import {UseMiddleware} from "./UseMiddleware";
 
 export class RuleValue {
     constructor(public data: any, public messages?: any) {

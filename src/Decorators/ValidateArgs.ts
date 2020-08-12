@@ -23,7 +23,7 @@ export function ValidateArgs(
 
         const instance = handlerRulers(type, args);
 
-        if (context.lang) {
+        if (context && context.lang) {
             Validator.useLang(context.lang.getLocale());
         }
 
