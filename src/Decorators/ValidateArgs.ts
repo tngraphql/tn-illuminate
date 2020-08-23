@@ -21,7 +21,7 @@ export function ValidateArgs(
     return createMethodDecorator(async ({args, context}: ResolverData<any>, next) => {
         messages = fnMessage(messages, context, args);
 
-        const instance = handlerRulers(type, args);
+        const instance = await handlerRulers(type, args, context);
 
         if (context && context.lang) {
             Validator.useLang(context.lang.getLocale());

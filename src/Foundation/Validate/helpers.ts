@@ -90,12 +90,12 @@ function mapMessage(key, values: {[key: string]: string}) {
     return res;
 }
 
-export function handlerRulers(target, args) {
+export async function handlerRulers(target, args, context) {
     if ( target instanceof RuleValue) {
         return target;
     }
     if ( isClass(target) ) {
-        return handlerRulers(target.prototype, args);
+        return handlerRulers(target.prototype, args, context);
     }
 
     const res = Reflect.getMetadata(META_DATA_VALIDATE_KEY, target) || target;
@@ -104,7 +104,7 @@ export function handlerRulers(target, args) {
     for( let item of Object.keys(data) ) {
         if ( typeof data[item].data === 'function' && ! isClass(data[item].data) ) {
             let messages = data[item].messages;
-            data[item] = data[item].data(args);
+            data[item] = await data[item].data(args, context);
             if ( ! isClassRule(data[item])) {
                 data[item] = new RuleValue(data[item], messages);
             }
@@ -115,16 +115,16 @@ export function handlerRulers(target, args) {
         }
 
         if ( isClass(data[item]) ) {
-            data[item] = handlerRulers(data[item], args);
+            data[item] = handlerRulers(data[item], args, context);
         }
 
         if ( Array.isArray(data[item]) ) {
             data[item] = (data[item] as any[]).map((r, index) => {
                 if ( isClass(r) ) {
                     if ( args && args[item] ) {
-                        return handlerRulers(r, args[item][index]);
+                        return handlerRulers(r, args[item][index], context);
                     } else {
-                        return handlerRulers(r, undefined);
+                        return handlerRulers(r, undefined, context);
                     }
                 }
                 return r;
