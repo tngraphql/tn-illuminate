@@ -19,7 +19,11 @@ export class RuleValue {
 }
 type Message<T> = T | ((context?: any, args?: any) => T)
 
-export function Rules(options: any, messages?: Message<{ [key: string]: string }> ): any {
+type ArrayRule = (string | object)[];
+type RuleOption = string | ArrayRule | ((args, context) => ArrayRule);
+
+export function Rules(options: RuleOption, messages?: Message<{ [key: string]: string }> ): any
+{
     return (target, propertyKey, d) => {
         if ( typeof propertyKey === 'symbol' ) {
             throw new SymbolKeysNotSupportedError();
