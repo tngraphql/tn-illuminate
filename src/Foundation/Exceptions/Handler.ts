@@ -54,6 +54,8 @@ export class Handler {
         if ( error.originalError instanceof ValidationException ) {
             return this.convertValidationExceptionToResponse(error.originalError);
         }
+
+        return Object.assign({code: error?.originalError['code']}, error);
     }
 
     protected convertValidationExceptionToResponse(error) {
