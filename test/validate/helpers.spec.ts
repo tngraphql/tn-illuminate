@@ -21,7 +21,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: { data: 'string' } });
         const rules = compileRules(ruleObject);
         expect(rules).toEqual({ name: 'string' });
@@ -33,7 +33,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({
             'name': {
                 'data': [
@@ -77,7 +77,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, { name: '10' });
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, { name: '10' });
         expect(ruleObject).toEqual({ name: { data: 'min:10' } });
         const rules = compileRules(ruleObject);
         expect(rules).toEqual({ name: 'min:10' });
@@ -91,7 +91,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, { name: '10' });
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, { name: '10' });
         expect(ruleObject).toEqual({ name: { data: 'min:10' } });
         const rules = compileRules(ruleObject);
         expect(rules).toEqual({ name: 'min:10' });
@@ -105,7 +105,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: { data: 'string', messages: { string: 'custom message :attribute' } } });
         const rules = compileRules(ruleObject);
         expect(rules).toEqual({ name: 'string' });
@@ -129,7 +129,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(compileMessages(ruleObject)).toEqual({ 'string.name': 'custom message :attribute' });
         const rules = compileRules(ruleObject);
         expect(rules).toEqual({ name: 'string' });
@@ -143,7 +143,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: { data: ['string', 'max:10'] } });
         const rules = compileRules(ruleObject);
         expect(rules).toEqual({ name: ['string', 'max:10'] });
@@ -155,7 +155,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: { data: ['string', 'max:10'] } });
         const rules = compileRules(ruleObject);
         expect(rules).toEqual({ name: ['string', 'max:10'] });
@@ -173,7 +173,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
 
         expect(ruleObject).toEqual({ name: { name: { data: 'required' } } });
 
@@ -192,9 +192,9 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
-        const ruleObject2 = handlerRulers(SimpleArgs.prototype, {});
-        const ruleObject3 = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject2 = await handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject3 = await handlerRulers(SimpleArgs.prototype, {});
 
         expect(ruleObject3).toEqual({ name: { name: { data: 'required' } } });
 
@@ -213,7 +213,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: [{ name: { data: 'required' } }] });
 
         const rules = compileRules(ruleObject);
@@ -231,7 +231,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: [{ name: { data: ['required', 'string'] } }] });
 
         const rules = compileRules(ruleObject);
@@ -249,7 +249,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: [{ name: { data: ['required', 'string'] } }] });
 
         const rules = compileRules(ruleObject);
@@ -267,7 +267,7 @@ describe('Utils | Handler rulers', () => {
             name: string;
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: [{ name: { data: ['required', 'string'] } }] });
 
         const rules = compileRules(ruleObject);
@@ -334,7 +334,7 @@ describe('Utils | Handler rulers', () => {
             }]
         };
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, data);
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, data);
 
         expect(ruleObject).toEqual({
             'users': [{
@@ -388,7 +388,7 @@ describe('Utils | Handler rulers', () => {
             user: string
         }
 
-        const ruleObject = handlerRulers(SimpleArgs.prototype, {});
+        const ruleObject = await handlerRulers(SimpleArgs.prototype, {});
         expect(ruleObject).toEqual({ name: { name: { data: 'required' } }, user: { name: { data: 'required' } } });
 
         const rules = compileRules(ruleObject);

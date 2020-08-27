@@ -1,7 +1,7 @@
 import {ClassType, createMethodDecorator, ResolverData} from '@tngraphql/graphql';
 import {compileMessages, compileRules, fnMessage, handlerRulers, merge} from '../Foundation/Validate/helpers';
-import {ValidationError} from './Rules';
 import {Validator} from '../Support/Facades/Validator';
+import {ValidationException} from "../Foundation/Validate/ValidationException";
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>
@@ -37,7 +37,7 @@ export function ValidateArgs(
                 reject({});
             });
         }).catch((err) => {
-            throw new ValidationError(validation)
+            throw new ValidationException(validation)
         });
 
         return next();

@@ -90,7 +90,7 @@ function mapMessage(key, values: {[key: string]: string}) {
     return res;
 }
 
-export async function handlerRulers(target, args, context) {
+export async function handlerRulers(target, args, context = {}) {
     if ( target instanceof RuleValue) {
         return target;
     }
@@ -115,11 +115,11 @@ export async function handlerRulers(target, args, context) {
         }
 
         if ( isClass(data[item]) ) {
-            data[item] = handlerRulers(data[item], args, context);
+            data[item] = await handlerRulers(data[item], args, context);
         }
 
         if ( Array.isArray(data[item]) ) {
-            data[item] = (data[item] as any[]).map((r, index) => {
+            data[item] = await Promise.all((data[item] as any[]).map((r, index) => {
                 if ( isClass(r) ) {
                     if ( args && args[item] ) {
                         return handlerRulers(r, args[item][index], context);
@@ -128,7 +128,7 @@ export async function handlerRulers(target, args, context) {
                     }
                 }
                 return r;
-            });
+            }));
         }
     }
 

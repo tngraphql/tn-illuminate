@@ -117,7 +117,7 @@ describe('Validate', () => {
 
         const res = await graphql(schema, query);
         expect(res.errors).not.toBeNull();
-        expect(res.errors[0].message).toBe('validation');
+        expect(res.errors[0].message).toBe('The given data was invalid.');
     });
 
     it('pass validate', async () => {
@@ -136,8 +136,8 @@ describe('Validate', () => {
 
         const res = await graphql(schema, query);
         expect(res.errors).not.toBeNull();
-        expect(res.errors[0].message).toBe('validation');
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toEqual('custom message validate name')
+        expect(res.errors[0].message).toBe('The given data was invalid.');
+        expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toEqual('custom message validate name')
     });
 
     it('should be allowed show custom messages for input attribute', async () => {
@@ -147,8 +147,8 @@ describe('Validate', () => {
 
         const res = await graphql(schema, query);
         expect(res.errors).not.toBeNull();
-        expect(res.errors[0].message).toBe('validation');
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toEqual('custom message validate name')
+        expect(res.errors[0].message).toBe('The given data was invalid.');
+        expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toEqual('custom message validate name')
     });
 
     it('should be allowed show custom messages for args', async () => {
@@ -158,7 +158,7 @@ describe('Validate', () => {
 
         const res = await graphql(schema, query);
         expect(res.errors).not.toBeNull();
-        expect(res.errors[0].message).toBe('validation');
-        expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toEqual('custom message validate args name')
+        expect(res.errors[0].message).toBe('The given data was invalid.');
+        expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toEqual('custom message validate args name')
     });
 });
