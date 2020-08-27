@@ -31,10 +31,6 @@ export class Resovler {
         private fallbackNamespace?: string,
     ) {}
 
-    /**
-     * Returns the prefix namespace by giving preference to the
-     * `.adonisrc.json` file
-     */
     private getPrefixNamespace (): string | undefined {
         return this.fallbackNamespace;
     }
