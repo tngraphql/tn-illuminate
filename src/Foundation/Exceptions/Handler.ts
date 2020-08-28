@@ -7,8 +7,9 @@
 import {Application} from "../Application";
 import { Logger } from '@adonisjs/logger/build/src/Logger';
 import {ValidationException} from "../Validate/ValidationException";
-import {GraphQLError} from "graphql";
+import {Service} from "../../Decorators";
 
+@Service()
 export class Handler {
 
     /**
@@ -50,12 +51,12 @@ export class Handler {
         });
     }
 
-    public render(error: GraphQLError) {
+    public render(error) {
         if ( error.originalError instanceof ValidationException ) {
             return this.convertValidationExceptionToResponse(error.originalError);
         }
 
-        return Object.assign({code: error?.originalError['code']}, error);
+        return Object.assign({code: error?.originalError?.code}, error);
     }
 
     protected convertValidationExceptionToResponse(error) {
