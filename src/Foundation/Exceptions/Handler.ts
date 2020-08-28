@@ -53,7 +53,7 @@ export class Handler {
 
     public render(error) {
         if ( error.originalError instanceof ValidationException ) {
-            return this.convertValidationExceptionToResponse(error.originalError);
+            return this.convertValidationExceptionToResponse(error);
         }
 
         return Object.assign({code: error?.originalError?.code}, error);
