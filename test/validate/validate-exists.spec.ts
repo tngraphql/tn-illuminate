@@ -320,7 +320,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
 
             const res = await graphql(schema, query);
 
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where not value', async () => {
@@ -329,7 +329,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
           }`;
 
             const res = await graphql(schema, query);
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where is null', async () => {
@@ -338,7 +338,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
           }`;
 
             const res = await graphql(schema, query);
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where is not null', async () => {
@@ -375,7 +375,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
           }`;
 
             const res = await graphql(schema, query);
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where in', async () => {
@@ -393,7 +393,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
           }`;
 
             const res = await graphql(schema, query);
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
     });
 });

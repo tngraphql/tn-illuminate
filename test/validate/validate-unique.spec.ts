@@ -355,7 +355,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
 
             const res = await graphql(schema, query);
 
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where not value', async () => {
@@ -384,7 +384,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
 
             const res = await graphql(schema, query);
 
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where value', async () => {
@@ -393,7 +393,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
           }`;
 
             const res = await graphql(schema, query);
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         /*it('where column,operator,value', async () => {
@@ -411,7 +411,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
           }`;
 
             const res = await graphql(schema, query);
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where use multiple callback', async () => {
@@ -429,7 +429,7 @@ export class RouterServiceProvider extends RoutingServiceProvider {
           }`;
 
             const res = await graphql(schema, query);
-            expect(_.get((res.errors[0].originalError as any).getValidatorMessages(), 'name.0')).toBe(message)
+            expect(_.get((res.errors[0].originalError as any).errors(), 'name.0')).toBe(message)
         });
 
         it('where not in', async () => {

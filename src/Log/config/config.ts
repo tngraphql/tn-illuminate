@@ -19,9 +19,6 @@ const logger: LoggerConfigContract = {
     | The name of the application you want to add to the log. It is recommended
     | to always have app name in every log line.
     |
-    | The `APP_NAME` environment variable is set by reading `appName` from
-    | `.adonisrc.json` file.
-    |
     */
     name: Env.get('APP_NAME') as string,
 

@@ -1,7 +1,7 @@
 import {ClassType, createMethodDecorator, ResolverData} from '@tngraphql/graphql';
 import {compileMessages, compileRules, fnMessage, handlerRulers, merge} from '../Foundation/Validate/helpers';
-import {ValidationError} from './Rules';
 import {Validator} from '../Support/Facades/Validator';
+import {ValidationException} from "../Foundation/Validate/ValidationException";
 
 /**
  * (c) Phan Trung Nguyên <nguyenpl117@gmail.com>
@@ -21,7 +21,7 @@ export function ValidateArgs(
     return createMethodDecorator(async ({args, context}: ResolverData<any>, next) => {
         messages = fnMessage(messages, context, args);
 
-        const instance = handlerRulers(type, args);
+        const instance = await handlerRulers(type, args, context);
 
         if (context && context.lang) {
             Validator.useLang(context.lang.getLocale());
@@ -37,7 +37,7 @@ export function ValidateArgs(
                 reject({});
             });
         }).catch((err) => {
-            throw new ValidationError(validation)
+            throw new ValidationException(validation)
         });
 
         return next();

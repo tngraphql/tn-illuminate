@@ -1,6 +1,6 @@
 {
   "name": "@tngraphql/illuminate",
-  "version": "1.1.7-11-alpha",
+  "version": "1.1.13",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -49,6 +49,7 @@
     "log-update": "^4.0.0",
     "macroable": "^4.0.2",
     "moment": "^2.24.0",
+    "php-serialize": "^4.0.2",
     "pretty-hrtime": "^1.0.3",
     "randomstring": "^1.1.5",
     "reflect-metadata": "^0.1.13",

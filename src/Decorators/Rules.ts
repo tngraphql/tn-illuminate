@@ -19,7 +19,15 @@ export class RuleValue {
 }
 type Message<T> = T | ((context?: any, args?: any) => T)
 
-export function Rules(options: any, messages?: Message<{ [key: string]: string }> ): any {
+interface ClassArgs {
+    new ()
+}
+
+type ArrayRule<T = string | object> = T | T[];
+type RuleOption =ArrayRule | ClassArgs | ((args, context) => ArrayRule | Promise<ArrayRule>);
+
+export function Rules(options: RuleOption, messages?: Message<{ [key: string]: string }> ): any
+{
     return (target, propertyKey, d) => {
         if ( typeof propertyKey === 'symbol' ) {
             throw new SymbolKeysNotSupportedError();
@@ -34,21 +42,5 @@ export function Rules(options: any, messages?: Message<{ [key: string]: string }
         }
 
         Reflect.defineMetadata(META_DATA_VALIDATE_KEY, data, target);
-    }
-}
-
-export class ValidationError extends Error {
-    validator: any;
-    message: string;
-    name: string;
-
-    constructor(validationErrors?: any) {
-        super('validation');
-        this.validator = validationErrors;
-    }
-
-
-    public getValidatorMessages() {
-        return this.validator ? this.validator.errors.all() : [];
     }
 }
