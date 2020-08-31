@@ -5210,6 +5210,11 @@ pg-connection-string@2.1.0:
   resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-2.1.0.tgz#e07258f280476540b24818ebb5dca29e101ca502"
   integrity sha512-bhlV7Eq09JrRIvo1eKngpwuqKtJnNhZdpdOlvrPrA4dxqXPjxSrbNrfnIDmTpwMyRszrcV4kU5ZA4mMsQUrjdg==
 
+php-serialize@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/php-serialize/-/php-serialize-4.0.2.tgz#869bd4e01c2d26ac41c1d3e8058ab00ec072e3e5"
+  integrity sha512-73K9MqCnRn07sXxOht6kVLg+fg1lf/VYpecKy4n9ABcw1PJIAWfaxuQKML27EjolGHWxlXTy3rfh59AGrcUvIA==
+
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.0.7:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.1.tgz#21bac888b6ed8601f831ce7816e335bc779f0a4a"
